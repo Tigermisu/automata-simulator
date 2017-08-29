@@ -1,10 +1,14 @@
 <div class="sidebar">
-  <div class="menu-item active">
-    <span>Diagram</span>
-  </div>
-  <div class="menu-item">
-    <span>Transition Table</span>
-  </div>
+  <a routerLinkActive="active" routerLink="diagram">
+    <div class="menu-item">
+      <span>Diagram</span>
+    </div>
+  </a>
+  <a routerLinkActive="active" routerLink="table">
+    <div class="menu-item">
+      <span>Transition Table</span>
+    </div>
+  </a>
   <div class="menu-item">
     <span>Simulation</span>
   </div>
@@ -13,7 +17,5 @@
   </div>
 </div>
 <div class="diagram-wrapper">
-  <div class="canvas-wrapper">
-
-  </div>
+  <router-outlet></router-outlet>
 </div>

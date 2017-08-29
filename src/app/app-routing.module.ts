@@ -5,8 +5,8 @@ import { MainMenuComponent }   from './main-menu.component';
 import { FiniteComponent } from './finite-automata/finite.component';
 
 const routes: Routes = [
-  { path: '', component: MainMenuComponent },
-  { path: 'finite', component: FiniteComponent }
+  { path: '', redirectTo: 'home', pathMatch: "full"},
+  { path: 'home', component: MainMenuComponent }
 ];
 
 @NgModule({

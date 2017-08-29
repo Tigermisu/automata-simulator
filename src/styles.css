@@ -24,6 +24,10 @@ a:hover {
     color: #2980b9;
 }
 
+a span {
+    color: #333;
+}
+
 .topbar {
     height: 48px;
     background-color: #d0d0d0;    
@@ -73,7 +77,7 @@ a:hover {
     user-select: none;
 }
 
-.sidebar .menu-item.active > span {
+.sidebar a.active .menu-item> span {
     font-weight: 800;
 }
 
