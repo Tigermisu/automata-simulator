@@ -8,6 +8,20 @@
 body {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
+    background-color: #f0f0f0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+a {
+    text-decoration: none;
+    color: #3498db;
+}
+
+a:hover {
+    color: #2980b9;
 }
 
 .topbar {
@@ -40,15 +54,12 @@ body {
     width: 100%;
 }
 
-.workspace > div {
-    float: left;
-}
-
 .sidebar {
-    height: 100%;
+    height: calc(100% - 40px);
     width: 200px;
     background-color: #f0f0f0;
     border-right: #d0d0d0 solid 1px;
+    float: left;
 }
 
 .sidebar .menu-item {
@@ -68,7 +79,8 @@ body {
 
 .diagram-wrapper {
     width: calc(100% - 200px);
-    height: 100%;
+    height: calc(100% - 40px);
+    float: right;
 }
 
 .toolbar {
@@ -81,12 +93,8 @@ body {
     position: relative;
 }
 
-.toolbar .contextual-tools {
-    float: left;
-}
-
-.toolbar .general-tools {
-    float: right;
+.toolbar .contextual-tools, .toolbar .general-tools {
+    display: inline-block;
 }
 
 .toolbar .tool {
@@ -118,6 +126,11 @@ body {
     top: -3px;
 }
 
+.toolbar:after {
+    content: "";
+    clear: both;
+}
+
 .tool.undo {
     background-image: url(/assets/img/ic_undo.png);
 }
@@ -143,6 +156,7 @@ body {
 }
 
 .canvas-wrapper {    
-    height: calc(100% - 40px);
+    height: 100%;
+    width: 100%;
     background-color: #fff;
 }

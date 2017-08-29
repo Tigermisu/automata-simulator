@@ -9,15 +9,9 @@
 </div>
 
 <div class="workspace">
-    <div class="sidebar">
-      <sidebar #sidebar></sidebar>
+    <div class="toolbar">
+        <toolbar #toolbar></toolbar>
     </div>
-    <div class="diagram-wrapper">
-        <div class="toolbar">
-            <toolbar #toolbar></toolbar>
-        </div>
-        <div class="canvas-wrapper">
-          <router-outlet></router-outlet>
-        </div>
-    </div>
+        
+    <router-outlet></router-outlet>
 </div>

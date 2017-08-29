@@ -1,12 +1,12 @@
 <div class="contextual-tools">
 
 </div>
-<div class="general-tools" [attr.style]="style">
-    <div id="undoTool" class="tool undo"></div>
-    <div id="redoTool" class="tool redo"></div>
+<div class="general-tools" [attr.style]="style" [class.hidden]="areGeneralToolsHidden">
     <div id="saveTool" class="tool save"></div>
-    <div class="separator"></div>
     <div id="newTool" class="tool new"></div>
     <div id="openTool" class="tool open"></div>
     <div id="deleteTool" class="tool delete"></div>
+    <div class="separator"></div>
+    <div id="undoTool" class="tool undo"></div>
+    <div id="redoTool" class="tool redo"></div>
 </div>

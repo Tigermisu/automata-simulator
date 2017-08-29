@@ -7,10 +7,12 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 })
 export class ToolbarComponent implements OnInit {
   style: SafeStyle;
+  areGeneralToolsHidden: Boolean;
 
   constructor(private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {    
-    this.style = this.sanitizer.bypassSecurityTrustStyle('background-color: red; border: 5px solid #000;');
+    //this.style = this.sanitizer.bypassSecurityTrustStyle('background-color: red; border: 5px solid #000;');
+    this.areGeneralToolsHidden = true;
   }
 }

@@ -1,22 +1,22 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { AppRoutingModule } from './app-routing.module';
+import { FiniteModule } from './finite-automata/finite.module';
 
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './sidebar.component';
 import { ToolbarComponent } from './toolbar.component';
-import { AppRoutingModule }     from './app-routing.module';
 import { MainMenuComponent }   from './main-menu.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ToolbarComponent,
-    SidebarComponent,
     MainMenuComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FiniteModule
   ],
   providers: [],
   bootstrap: [AppComponent]
