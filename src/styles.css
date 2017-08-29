@@ -159,8 +159,97 @@ a span {
     background-image: url(/assets/img/ic_delete.png);    
 }
 
-.canvas-wrapper {    
+.canvas-wrapper, .text-wrapper {    
     height: 100%;
     width: 100%;
     background-color: #fff;
+}
+
+.text-wrapper {
+    padding: 16px;
+}
+
+.text-wrapper h2 {
+    margin: 0 0 30px;
+}
+
+.text-wrapper label {
+    font-size: 18px;
+}
+
+.text-wrapper input:not([type=radio]) {
+    display: block;
+    height: 40px;
+    font-size: 18px;
+    margin-bottom: 20px;
+    width: 400px;
+    max-width: 100%;
+    padding: 0 8px;
+}
+
+.text-wrapper input[type=radio] {
+    height: initial;
+    widows: initial;
+    margin-bottom: 0;
+}
+
+.radio-wrapper {
+    margin: 10px 0 20px;
+}
+
+.radio-wrapper label {
+    font-size: 14px;
+}
+
+.radio-wrapper label:after {
+    content: "";
+    display: block;
+}
+
+.alphabet-symbols {
+    margin: 10px 0;
+    width: 400px;
+    max-width: 100%;
+    user-select: none;
+}
+
+.alphabet-symbols > span {
+    color: #bcbcbc;
+    font-style: italic;
+}
+
+.alphabet-symbols .symbol-entry {
+    display: inline-block;
+    margin: 4px 4px 4px 0;
+    padding: 2px 3px;
+    background-color: #f0f0f0;
+    border: #bcbcbc solid 1px;
+}
+
+.alphabet-symbols .remove {
+    margin: 0 3px;
+    color: #e74c3c;
+    cursor: pointer;
+}
+
+.alphabet-symbols .remove:hover {
+    color: #c0392b;
+}
+
+.plus-adder {
+    width: 400px;
+    max-width: 100%;
+}
+
+.text-wrapper .plus-adder > input {
+    width: 360px;
+    max-width: calc(100% - 40px);
+    float: left;
+}
+
+.plus-adder > button {
+    width: 40px;
+    height: 40px;
+    float: right;
+    cursor: pointer;
 }

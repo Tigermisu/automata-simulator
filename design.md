@@ -7,8 +7,6 @@ The **Global Application State** stores information about the current editor sta
 ### Components
 #### Metadata
 The metadata refers to the current document's name, creation date, author and last edit date. It also has information about the current session, including if the current Automata has unsaved modifications.
-#### Global Context
-The **Global Context** depends on the active Automata and defines which specific **context** to load.
 ##### Context
 The **context** refers to the active section, which defines the items in the contextual toolbar and elements present in the canvas. Depending on the active context, some sections might not be shown. The following context options are defined:
  - Diagram: Displays the editable graph of the Automata.

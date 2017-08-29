@@ -1,9 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AppStateService } from './app-state.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent {
-  title: string;
+export class AppComponent implements OnInit {
+  constructor(private appStateService: AppStateService) {}
+
+  ngOnInit() {
+    this.appStateService.registerAppComponent(this);
+  }
 }

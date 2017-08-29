@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DiagramComponent }   from './diagram.component';
 import { FiniteComponent } from './finite.component';
 import { TableComponent } from './table.component';
+import { OptionsComponent } from './options.component';
 
 const routes: Routes = [
   { 
@@ -22,7 +23,11 @@ const routes: Routes = [
      {
        path: 'table',
        component: TableComponent
-     }
+     },
+     {
+      path: 'options',
+      component: OptionsComponent
+    }
     ]
   },
 ];
