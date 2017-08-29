@@ -1,7 +1,7 @@
 {
-  "name": "angular-app",
-  "version": "0.0.0",
-  "license": "MIT",
+  "name": "christomata",
+  "version": "0.0.5",
+  "license": "APACHE",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
