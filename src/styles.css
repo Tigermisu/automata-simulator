@@ -120,7 +120,11 @@ a span {
     background-color: #d0d0d0;
 }
 
-.toolbar .separator {
+.contextual-wrapper:before {
+    content: "";
+}
+
+.toolbar .separator, .contextual-wrapper:before {
     position: relative;
     display: inline-block;
     width: 1px;
@@ -215,7 +219,6 @@ a span {
 
 .alphabet-symbols > span {
     color: #bcbcbc;
-    font-style: italic;
 }
 
 .alphabet-symbols .symbol-entry {

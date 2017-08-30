@@ -33,14 +33,19 @@ export class AppStateService {
 
     startNewProject(type: string) {
         this.globalState = new GlobalState(type);
-        this.toolbarComponent.setToolbarType(this.globalState.automata.type);
-
         console.info("Created new global state:", this.globalState);
     }
 
     resetState() {
         this.globalState = undefined;
-        this.toolbarComponent.setToolbarType(null);
+    }
+
+    requestToolbar(toolbarName: string) {
+        this.toolbarComponent.activateToolbar(toolbarName);
+    }
+
+    releaseToolbar() {
+        this.toolbarComponent.activateToolbar(null);
     }
 
 }

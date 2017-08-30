@@ -50,7 +50,15 @@ export class Alphabet {
     }
 
     getFormalString() {
-        return '\u03A3 = {}';
+        let setString = "",
+            lastIndex = this.symbols.length - 1;
+        this.symbols.forEach((symbol, index) => {
+            setString += symbol.symbol;
+            if(index != lastIndex) {
+                setString += ", ";
+            } 
+        });
+        return '\u03A3 = {' + setString + '}';
     }
 }
 

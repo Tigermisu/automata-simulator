@@ -21,8 +21,11 @@ export class OptionsComponent {
 
   addSymbolToAlphabet() {      
     if(this.editorSymbol.trim() != '') {// Prevent empty symbols
-      let symbol = new AlphabetSymbol(this.editorSymbol);
-      this.appStateService.globalState.automata.addSymbolToAlphabet(symbol);
+      let symbolArray = this.editorSymbol.trim().split(',');
+      symbolArray.forEach((stringSymbol) => {
+        let symbol = new AlphabetSymbol(stringSymbol.trim());
+        this.appStateService.globalState.automata.addSymbolToAlphabet(symbol);
+      });
     }
     this.editorSymbol = "";
   }  

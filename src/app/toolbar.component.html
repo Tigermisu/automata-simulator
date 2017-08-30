@@ -1,7 +1,4 @@
-<div class="contextual-tools">
-
-</div>
-<div class="general-tools" [attr.style]="style" [class.hidden]="areGeneralToolsHidden">
+<div class="general-tools" [attr.style]="style" [class.hidden]="!appStateService.globalState">
     <div id="saveTool" class="tool save"></div>
     <div id="newTool" class="tool new"></div>
     <div id="openTool" class="tool open"></div>
@@ -9,4 +6,10 @@
     <div class="separator"></div>
     <div id="undoTool" class="tool undo"></div>
     <div id="redoTool" class="tool redo"></div>
+</div>
+<div class="contextual-tools">
+    <div id="finiteTools" class="contextual-wrapper" [class.hidden]="!toolbarEnableState.finiteautomata">
+        <div id="newFiniteState" class="tool"></div>
+        <div id="newFiniteTransition" class="tool"></div>
+    </div>
 </div>

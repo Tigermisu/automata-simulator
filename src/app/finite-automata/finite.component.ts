@@ -12,10 +12,10 @@ export class FiniteComponent implements OnInit {
   ngOnInit() {
     if(typeof(this.appStateService.globalState) == "undefined" 
       || this.appStateService.globalState.automata.type != "finite-automata") {
-        this.router.navigateByUrl("/");
+        this.router.navigateByUrl("/home", { replaceUrl: true });
     } else if(this.appStateService.globalState.metadata.title == "New Project") {
       this.appStateService.globalState.automata.properties.isDeterministic = true;
-      this.router.navigateByUrl("/finite/options");
+      this.router.navigateByUrl("/finite/options", { replaceUrl: true });
     }
   }
 }

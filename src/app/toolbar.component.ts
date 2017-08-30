@@ -8,7 +8,9 @@ import { AppStateService } from './app-state.service';
 })
 export class ToolbarComponent implements OnInit {
   style: SafeStyle;
-  areGeneralToolsHidden: Boolean;
+  toolbarEnableState = {
+    "finiteautomata": false
+  };
 
   constructor(private sanitizer: DomSanitizer,
               private appStateService: AppStateService) {}
@@ -17,19 +19,16 @@ export class ToolbarComponent implements OnInit {
   ngOnInit(): void {    
     this.appStateService.registerToolbarComponent(this);
     //this.style = this.sanitizer.bypassSecurityTrustStyle('background-color: red; border: 5px solid #000;');
-    this.areGeneralToolsHidden = true;
   }
 
-  setToolbarType(type: string) {
-    this.areGeneralToolsHidden = false;
+  activateToolbar(type: string) {
 
     switch(type) {
       case "finite-automata":
-        console.log("enabling finite automata tools");
+        this.toolbarEnableState.finiteautomata = true;
         break;
       default:
-        console.warn("Unknown toolbar type");
-        this.areGeneralToolsHidden = true;
+        this.toolbarEnableState.finiteautomata = false;
     }
   }
 }
