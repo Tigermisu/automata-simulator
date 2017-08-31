@@ -8,7 +8,8 @@ import { AppStateService } from './app-state.service';
 })
 export class ToolbarComponent implements OnInit {
   style: SafeStyle;
-  toolbarEnableState = {
+  private selectedTool: string;
+  private toolbarEnableState = {
     "finiteautomata": false
   };
 
@@ -30,5 +31,13 @@ export class ToolbarComponent implements OnInit {
       default:
         this.toolbarEnableState.finiteautomata = false;
     }
+  }
+
+  getSelectedTool() {
+    return this.selectedTool;
+  }
+
+  selectTool(tool: string) {
+    this.selectedTool = tool;
   }
 }

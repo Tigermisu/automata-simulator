@@ -1,4 +1,12 @@
 
-  <div class="canvas-wrapper">
-    <span>Hjello! Ich bin a canvas</span>
+  <div class="canvas-wrapper" 
+    (mousedown)="onCanvasMouseDown($event)"
+    (mouseup)="onCanvasMouseUp($event)"
+    (contextmenu)="preventContextMenu($event)"
+    >
+    <div class="state" *ngFor="let state of appStateService.globalState?.automata.states"
+    [style.transform]="state.transformPosition"
+    (drag)="onDrag($event)">
+      <span class="state-name">{{ state.name }}</span>
+    </div>
   </div>

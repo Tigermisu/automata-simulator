@@ -1,0 +1,14 @@
+.state {
+    position: absolute;
+    display: flex;
+    top: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: #333 solid 1px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: #fff;
+}

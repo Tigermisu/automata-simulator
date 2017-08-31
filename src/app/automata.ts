@@ -26,7 +26,20 @@ export class State {
     name: string;
     type: string;
     transitions: Transition[];
-    layoutPosition: Position;    
+    layoutPosition: Coords;    
+
+    constructor(name: string, type: string, position: Coords) {
+        this.name = name;
+        this.type = type;
+        this.layoutPosition = position;
+        this.transitions = [];
+    }
+
+    get transformPosition() {
+        let position = "translate(" + (this.layoutPosition.x - 30) + "px, " 
+        + (this.layoutPosition.y - 30) +"px)";
+        return position;
+    }
 }
 
 export class Transition {
@@ -71,5 +84,15 @@ export class AlphabetSymbol {
 
     toString() {
         return this.symbol;
+    }
+}
+
+export class Coords {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
     }
 }

@@ -28,6 +28,11 @@ a span {
     color: #333;
 }
 
+.topbar, .toolbar, .sidebar {
+    position: relative;
+    z-index: 1;
+}
+
 .topbar {
     height: 48px;
     background-color: #d0d0d0;    
@@ -116,7 +121,7 @@ a span {
     background-color: #e0e0e0;
 }
 
-.toolbar .tool:active {
+.toolbar .tool:active, .toolbar .tool.active {
     background-color: #d0d0d0;
 }
 
@@ -164,6 +169,7 @@ a span {
 }
 
 .canvas-wrapper, .text-wrapper {    
+    position: relative;
     height: 100%;
     width: 100%;
     background-color: #fff;

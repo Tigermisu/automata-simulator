@@ -48,4 +48,8 @@ export class AppStateService {
         this.toolbarComponent.activateToolbar(null);
     }
 
+    getActiveTool() {
+        return this.toolbarComponent.getSelectedTool();
+    }
+
 }
