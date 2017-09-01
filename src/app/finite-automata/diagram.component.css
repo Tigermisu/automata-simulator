@@ -52,12 +52,24 @@
     border-top: #333 solid 1px;
 }
 
+.transition.selected {
+    border-top-width: 3px;
+}
+
 .transition:after {
     content: "";
     position: absolute;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
 
+}
+
+.transition.self {
+    height: 45px;
+    border-radius: 50%;
+    border-right: #333 solid 1px;
+    border-left: #333 solid 1px;
+    border-bottom: transparent solid 3px;
 }
 
 .transition.rightArrow:after {
@@ -70,4 +82,12 @@
     left: 0;
     top: -6px;
     border-right: 8px solid #333;
+}
+
+.transition.self:after {
+    right: 0;
+    top: initial;
+    bottom: 0;
+    border-left: 8px solid #333;
+    transform: rotate(120deg);
 }

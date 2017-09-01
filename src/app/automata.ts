@@ -2,6 +2,7 @@ export class Automata {
     type: string;
     states: State[];
     selectedState: State;
+    selectedTransition: Transition;
     alphabet: Alphabet;
     properties;
 
@@ -9,6 +10,7 @@ export class Automata {
         this.type = type;
         this.states = [];
         this.selectedState = null;
+        this.selectedTransition = null;
         this.alphabet = new Alphabet();
         this.properties = {};
     }
@@ -21,6 +23,19 @@ export class Automata {
     removeSymbolFromAlphabet(symbol: AlphabetSymbol) {
         let index = this.alphabet.symbols.indexOf(symbol);
         if(index != -1) this.alphabet.symbols.splice(index, 1);
+    }
+
+    deleteState(state: State) {
+        let index = this.states.indexOf(state);
+        this.states.splice(index, 1);
+        for(let i = 0; i < this.states.length; i++) {
+            this.states[i].transitions = this.states[i].transitions.filter((transition) => {
+                return transition.destination != state;
+            });
+            if(i >= index) {
+                this.states[i].name = "q" + i;
+            }
+        }
     }
 }
 
@@ -77,6 +92,9 @@ export class Transition {
     }
 
     get transformPosition() {
+        if(this.origin == this.destination) {
+            return "translate(0, -45px)";
+        }
         let x = (this.origin.layoutPosition.x + this.destination.layoutPosition.x) / 2,
             y = (this.origin.layoutPosition.y + this.destination.layoutPosition.y) / 2,
             angle = Math.atan(  (this.destination.layoutPosition.y - this.origin.layoutPosition.y)
@@ -92,19 +110,25 @@ export class Transition {
             this.hasRightArrow = true;
         }
         
-        console.log(this.origin.name, x, y, angle, this.hasRightArrow? "right":"left");
-
-        y -= Math.cos(angle) * 15 * this.shouldDuplicateLayout;
-        x += Math.sin(angle) * 15 * this.shouldDuplicateLayout;
+        if(this.shouldDuplicateLayout != 0) { // Prevent most states from having to 4 comparisons
+            if((this.shouldDuplicateLayout == 1 && x >= 0) || (this.shouldDuplicateLayout == -1 && x < 0)) {
+                y -= Math.cos(angle) * 8 * this.shouldDuplicateLayout;
+                x += Math.sin(angle) * 8 * this.shouldDuplicateLayout;
+            } else if((this.shouldDuplicateLayout == 1 && x < 0) || (this.shouldDuplicateLayout == -1 && x >= 0)) {
+                y += Math.cos(angle) * 8 * this.shouldDuplicateLayout;
+                x -= Math.sin(angle) * 8 * this.shouldDuplicateLayout;
+            }
+        }
 
         angle *= 180 / Math.PI; // Convert to degrees
-
-
 
         return "translate(" + x + "px, " + y + "px) rotate(" + angle + "deg)";          
     }
 
     get width() {
+        if(this.origin == this.destination) {
+            return 45;
+        }
         return this.origin.layoutPosition.distanceTo(this.destination.layoutPosition) - 60;
     }
 }

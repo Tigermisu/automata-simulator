@@ -1,8 +1,8 @@
 <div class="general-tools" [attr.style]="style" [class.hidden]="!appStateService.globalState">
-    <div id="saveTool" class="tool save"></div>
+    <div id="saveTool" class="tool save" (click)="saveAutomata()"></div>
     <div id="newTool" class="tool new"></div>
     <div id="openTool" class="tool open"></div>
-    <div id="deleteTool" class="tool delete"></div>
+    <div id="deleteTool" class="tool delete" (click)="deleteSelection()"></div>
     <div class="separator"></div>
     <div id="undoTool" class="tool undo"></div>
     <div id="redoTool" class="tool redo"></div>

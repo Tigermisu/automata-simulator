@@ -95,7 +95,10 @@ export class DiagramComponent implements OnInit, OnDestroy {
   }
 
   onStateMouseMove($event, state: State) {
-    if(this.lastClickDetails.isMouseDown && this.lastClickDetails.target == $event.target) {
+    if(this.lastClickDetails.isMouseDown 
+        && this.lastClickDetails.target == $event.target
+        && (this.lastClickDetails.x != $event.pageX 
+            || this.lastClickDetails.y != $event.pageY)) {
       this.draggedState = state;
     }
   }
@@ -106,6 +109,21 @@ export class DiagramComponent implements OnInit, OnDestroy {
         this.draggedState.layoutPosition.x = $event.pageX - 200,
         this.draggedState.layoutPosition.y = $event.pageY - 88
       );
+    }
+  }
+
+  onTransitionMouseDown($event, transition: Transition) {
+    console.info("ts mouse down");
+    $event.stopPropagation();
+    this.lastClickDetails = {
+      x: $event.pageX,
+      y: $event.pageY,
+      button: $event.button,
+      ctrl: $event.ctrlKey,
+      shift: $event.shiftKey, 
+      timestamp: $event.timeStamp,
+      target: $event.target,
+      isMouseDown: false,
     }
   }
 
@@ -135,6 +153,36 @@ export class DiagramComponent implements OnInit, OnDestroy {
         console.info("Got left click on state", $event);
       }
     }
+  }
+
+  onTransitionMouseUp($event: MouseEvent, transition: Transition) {
+    $event.stopPropagation();
+    this.draggedState = null;
+
+    this.lastClickDetails.isMouseDown = false;
+
+    let clickDetails = {
+      x: $event.pageX,
+      y: $event.pageY,
+      button: $event.button,
+      ctrl: $event.ctrlKey,
+      shift: $event.shiftKey, 
+      timestamp: $event.timeStamp,
+      target: $event.target
+    };
+
+    let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
+      new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
+    );
+
+    if(distance < 64) {
+      this.processTransitionLeftClick(clickDetails, transition);
+      console.info("Got left click on transition", $event);
+    }
+  }
+
+  processTransitionLeftClick(clickDetails, transition: Transition) {
+    this.appStateService.globalState.automata.selectedTransition = transition;
   }
 
   processStateLeftClick(clickDetails, state: State) {

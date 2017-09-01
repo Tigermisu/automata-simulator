@@ -16,7 +16,11 @@
       <div class="transition" *ngFor="let transition of state.transitions"
       [style.transform]="sanitizeStyle(transition.transformPosition)"
       [style.width.px]="transition.width"
+      [class.self]="transition.origin == transition.destination"
+      [class.selected]="appStateService.globalState?.automata.selectedTransition == transition"
       [class.rightArrow]="transition.hasRightArrow"
-      [class.leftArrow]="!transition.hasRightArrow"></div>
+      [class.leftArrow]="!transition.hasRightArrow"
+      (mousedown)="onTransitionMouseDown($event, transition)"
+      (mouseup)="onTransitionMouseUp($event, transition)"></div>
     </div>
   </div>

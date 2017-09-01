@@ -33,6 +33,19 @@ export class ToolbarComponent implements OnInit {
     return this.selectedTool;
   }
 
+  deleteSelection() {
+    if(this.appStateService.globalState.automata.selectedState != null) {
+      this.appStateService.globalState.automata.deleteState(
+              this.appStateService.globalState.automata.selectedState);
+    } else {
+
+    }
+  }
+
+  saveAutomata() {
+    console.log(JSON.stringify(this.appStateService.globalState));
+  }
+
   selectTool(tool: string) {
     if(this.selectedTool != tool) {
       this.selectedTool = tool;
