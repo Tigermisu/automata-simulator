@@ -58,11 +58,22 @@ export class Transition {
     origin: State;
     destination: State;
     conditions: AlphabetSymbol[];
+    shouldDuplicateLayout: number;
+    hasRightArrow: Boolean;
 
     constructor(origin: State, destination: State) {
         this.origin = origin;
         this.destination = destination;
         this.conditions = [];
+        this.shouldDuplicateLayout = 0;
+        this.hasRightArrow = true;
+
+        for(let i = 0; i < destination.transitions.length && this.shouldDuplicateLayout == 0; i++) {
+            if(destination.transitions[i].destination == origin) {
+                destination.transitions[i].shouldDuplicateLayout = 1;
+                this.shouldDuplicateLayout = -1;
+            }
+        }
     }
 
     get transformPosition() {
@@ -73,7 +84,22 @@ export class Transition {
         
         x -= this.origin.layoutPosition.x;
         y -= this.origin.layoutPosition.y;
+
+        
+        if((x < 0 && y <= 0) || (x < 0 && y > 0)) {
+            this.hasRightArrow = false;
+        } else {
+            this.hasRightArrow = true;
+        }
+        
+        console.log(this.origin.name, x, y, angle, this.hasRightArrow? "right":"left");
+
+        y -= Math.cos(angle) * 15 * this.shouldDuplicateLayout;
+        x += Math.sin(angle) * 15 * this.shouldDuplicateLayout;
+
         angle *= 180 / Math.PI; // Convert to degrees
+
+
 
         return "translate(" + x + "px, " + y + "px) rotate(" + angle + "deg)";          
     }

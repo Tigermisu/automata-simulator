@@ -15,6 +15,8 @@
       <span class="state-name">{{ state.name }}</span>
       <div class="transition" *ngFor="let transition of state.transitions"
       [style.transform]="sanitizeStyle(transition.transformPosition)"
-      [style.width.px]="transition.width"></div>
+      [style.width.px]="transition.width"
+      [class.rightArrow]="transition.hasRightArrow"
+      [class.leftArrow]="!transition.hasRightArrow"></div>
     </div>
   </div>

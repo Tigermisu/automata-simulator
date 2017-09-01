@@ -51,3 +51,23 @@
     width: 10px;
     border-top: #333 solid 1px;
 }
+
+.transition:after {
+    content: "";
+    position: absolute;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+
+}
+
+.transition.rightArrow:after {
+    right: 0;
+    top: -6px;
+    border-left: 8px solid #333;
+}
+
+.transition.leftArrow:after {
+    left: 0;
+    top: -6px;
+    border-right: 8px solid #333;
+}
