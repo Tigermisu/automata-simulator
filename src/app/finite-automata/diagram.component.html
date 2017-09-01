@@ -3,10 +3,18 @@
     (mousedown)="onCanvasMouseDown($event)"
     (mouseup)="onCanvasMouseUp($event)"
     (contextmenu)="preventContextMenu($event)"
+    (mousemove)="onCanvasMouseMove($event)"
     >
     <div class="state" *ngFor="let state of appStateService.globalState?.automata.states"
     [style.transform]="state.transformPosition"
-    (drag)="onDrag($event)">
+    [class.selected]="appStateService.globalState?.automata.selectedState == state"
+    [class.initial]="state.type == 'initial'"
+    [class.final]="state.type == 'final'"
+    (mouseup)="onStateMouseUp($event, state)"
+    (mousemove)="onStateMouseMove($event, state)">
       <span class="state-name">{{ state.name }}</span>
+      <div class="transition" *ngFor="let transition of state.transitions"
+      [style.transform]="sanitizeStyle(transition.transformPosition)"
+      [style.width.px]="transition.width"></div>
     </div>
   </div>

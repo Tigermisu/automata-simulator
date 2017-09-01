@@ -168,6 +168,14 @@ a span {
     background-image: url(/assets/img/ic_delete.png);    
 }
 
+.tool.newFiniteState {
+    background-image: url(/assets/img/ic_add_circle.png);        
+}
+
+.tool.newFiniteTransition {
+    background-image: url(/assets/img/ic_arrow.png);        
+}
+
 .canvas-wrapper, .text-wrapper {    
     position: relative;
     height: 100%;

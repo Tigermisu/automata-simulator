@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppStateService } from '../app-state.service';
 import { State, Transition, Coords } from '../automata';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 
 @Component({
@@ -8,8 +9,13 @@ import { State, Transition, Coords } from '../automata';
   styleUrls: ['./diagram.component.css']
 })
 export class DiagramComponent implements OnInit, OnDestroy {
-  constructor(private appStateService: AppStateService) {}
-  private lastClickDetails: any = {};
+  private lastClickDetails: any = {
+    isMouseDown: false
+  };
+  draggedState: State = null;
+
+  constructor(private appStateService: AppStateService,
+              private sanitizer: DomSanitizer) {}
  
   ngOnInit() {
     this.appStateService.requestToolbar('finite-automata');
@@ -30,30 +36,15 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
   onCanvasMouseDown($event: MouseEvent) {
     this.lastClickDetails = {
-      x: $event.offsetX,
-      y: $event.offsetY,
+      x: $event.pageX,
+      y: $event.pageY,
       button: $event.button,
       ctrl: $event.ctrlKey,
       shift: $event.shiftKey, 
-      timestamp: $event.timeStamp
+      timestamp: $event.timeStamp,
+      target: $event.target,
+      isMouseDown: true,
     }
-
-    let activeTool = this.appStateService.getActiveTool();
-    console.info("onCanvasMouseDown", $event);
-
-    console.info(activeTool);
-    switch(activeTool) {
-      case 'newFiniteState':
-        break;
-      case 'newFiniteTransition':
-        break;
-      default:
-        console.warn("Unrecognized tool:", activeTool);
-    }
-  }
-
-  onDrag($event) {
-    console.info("onDrag", $event);
   }
 
   preventContextMenu($event: MouseEvent) {
@@ -62,47 +53,111 @@ export class DiagramComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  onCanvasMouseUp($event) {
-    let clickDetails = {
-      x: $event.offsetX,
-      y: $event.offsetY,
-      button: $event.button,
-      ctrl: $event.ctrlKey,
-      shift: $event.shiftKey, 
-      timestamp: $event.timeStamp
-    };
+  onCanvasMouseUp($event: MouseEvent) {
+    this.draggedState = null;
+    
+    if(this.lastClickDetails.isMouseDown) {
+      this.lastClickDetails.isMouseDown = false;
 
-    let distance = this.distanceBetweenPoints(
-      new Coords(clickDetails.x, clickDetails.y),
-      new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
-    );
+      let clickDetails = {
+        x: $event.pageX,
+        y: $event.pageY,
+        button: $event.button,
+        ctrl: $event.ctrlKey,
+        shift: $event.shiftKey, 
+        timestamp: $event.timeStamp,
+        target: $event.target
+      };
 
-    if(distance < 500) {
-      this.processLeftClick(clickDetails);
+      let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
+        new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
+      );
+
+      if(distance < 64) {
+        this.processCanvasLeftClick(clickDetails);
+      }
     }
-
-    console.info("onCanvasMouseUp", $event);
-
-
   }
 
-  processLeftClick(clickDetails) {
+  processCanvasLeftClick(clickDetails) {
     let activeTool = this.appStateService.getActiveTool();
-    console.info("Got a left click", clickDetails);
+    console.info("Got a left click on the canvas", clickDetails);
+
+    this.appStateService.globalState.automata.selectedState = null;
   
     switch(activeTool) {
       case 'newFiniteState':
-        this.createState({x: clickDetails.x, y: clickDetails.y});
-        break;
-      case 'newFiniteTransition':
+        this.createState({x: clickDetails.x - 200, y: clickDetails.y - 88});
         break;
       default:
         console.warn("Unrecognized tool:", activeTool);
       }
   }
 
-  distanceBetweenPoints(a: Coords, b: Coords) {
-    return Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2);
+  onStateMouseMove($event, state: State) {
+    if(this.lastClickDetails.isMouseDown && this.lastClickDetails.target == $event.target) {
+      this.draggedState = state;
+    }
+  }
+
+  onCanvasMouseMove($event) {
+    if(this.draggedState != null) {
+      this.draggedState.layoutPosition = new Coords(
+        this.draggedState.layoutPosition.x = $event.pageX - 200,
+        this.draggedState.layoutPosition.y = $event.pageY - 88
+      );
+    }
+  }
+
+  onStateMouseUp($event: MouseEvent, state: State) {
+    $event.stopPropagation();
+    this.draggedState = null;
+
+    if(this.lastClickDetails.isMouseDown) {
+      this.lastClickDetails.isMouseDown = false;
+
+      let clickDetails = {
+        x: $event.pageX,
+        y: $event.pageY,
+        button: $event.button,
+        ctrl: $event.ctrlKey,
+        shift: $event.shiftKey, 
+        timestamp: $event.timeStamp,
+        target: $event.target
+      };
+
+      let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
+        new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
+      );
+
+      if(distance < 64) {
+        this.processStateLeftClick(clickDetails, state);
+        console.info("Got left click on state", $event);
+      }
+    }
+  }
+
+  processStateLeftClick(clickDetails, state: State) {
+    let activeTool = this.appStateService.getActiveTool();
+    
+    switch(activeTool) {
+      case 'newFiniteTransition':
+        if(this.appStateService.globalState.automata.selectedState != null) {
+          this.addTransition(this.appStateService.globalState.automata.selectedState, state);
+          this.appStateService.globalState.automata.selectedState = null;
+          break;
+        }
+      default:
+        this.appStateService.globalState.automata.selectedState = state;
+      }
+  }
+
+  addTransition(from: State, to: State) {
+    from.addTransition(to);
+  }
+
+  sanitizeStyle(unsafeStyle: string): SafeStyle {
+    return this.sanitizer.bypassSecurityTrustStyle(unsafeStyle);
   }
 
 }
