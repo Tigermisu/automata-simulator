@@ -37,8 +37,11 @@ export class ToolbarComponent implements OnInit {
     if(this.appStateService.globalState.automata.selectedState != null) {
       this.appStateService.globalState.automata.deleteState(
               this.appStateService.globalState.automata.selectedState);
-    } else {
-
+      this.appStateService.globalState.automata.selectedState = null;
+    } else if(this.appStateService.globalState.automata.selectedTransition != null) {
+      this.appStateService.globalState.automata.deleteTransition(
+              this.appStateService.globalState.automata.selectedTransition);
+      this.appStateService.globalState.automata.selectedTransition = null;
     }
   }
 
@@ -51,6 +54,8 @@ export class ToolbarComponent implements OnInit {
       this.selectedTool = tool;
     } else {
       this.selectedTool = null;
+      this.appStateService.globalState.automata.selectedTransition = null;
+      this.appStateService.globalState.automata.selectedState = null;
     }
   }
 }

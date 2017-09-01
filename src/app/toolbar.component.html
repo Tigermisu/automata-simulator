@@ -1,4 +1,4 @@
-<div class="general-tools" [attr.style]="style" [class.hidden]="!appStateService.globalState">
+<div class="general-tools" [attr.style]="style" *ngIf="appStateService.globalState">
     <div id="saveTool" class="tool save" (click)="saveAutomata()"></div>
     <div id="newTool" class="tool new"></div>
     <div id="openTool" class="tool open"></div>
@@ -8,7 +8,7 @@
     <div id="redoTool" class="tool redo"></div>
 </div>
 <div class="contextual-tools">
-    <div id="finiteTools" class="contextual-wrapper" [class.hidden]="!toolbarEnableState.finiteautomata">
+    <div id="finiteTools" class="contextual-wrapper" *ngIf="toolbarEnableState.finiteautomata">
         <div id="newFiniteState" class="tool newFiniteState" [class.active]="selectedTool == 'newFiniteState'" 
             (click)="selectTool('newFiniteState')"></div>
         <div id="newFiniteTransition" class="tool newFiniteTransition" [class.active]="selectedTool == 'newFiniteTransition'"

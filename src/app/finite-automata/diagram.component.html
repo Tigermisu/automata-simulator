@@ -1,26 +1,56 @@
-
-  <div class="canvas-wrapper" 
-    (mousedown)="onCanvasMouseDown($event)"
-    (mouseup)="onCanvasMouseUp($event)"
-    (contextmenu)="preventContextMenu($event)"
-    (mousemove)="onCanvasMouseMove($event)"
-    >
-    <div class="state" *ngFor="let state of appStateService.globalState?.automata.states"
-    [style.transform]="state.transformPosition"
-    [class.selected]="appStateService.globalState?.automata.selectedState == state"
-    [class.initial]="state.type == 'initial'"
-    [class.final]="state.type == 'final'"
-    (mouseup)="onStateMouseUp($event, state)"
-    (mousemove)="onStateMouseMove($event, state)">
-      <span class="state-name">{{ state.name }}</span>
-      <div class="transition" *ngFor="let transition of state.transitions"
-      [style.transform]="sanitizeStyle(transition.transformPosition)"
-      [style.width.px]="transition.width"
-      [class.self]="transition.origin == transition.destination"
-      [class.selected]="appStateService.globalState?.automata.selectedTransition == transition"
-      [class.rightArrow]="transition.hasRightArrow"
-      [class.leftArrow]="!transition.hasRightArrow"
-      (mousedown)="onTransitionMouseDown($event, transition)"
-      (mouseup)="onTransitionMouseUp($event, transition)"></div>
+<div class="canvas-wrapper" #canvas
+  (mousedown)="onCanvasMouseDown($event)"
+  (mouseup)="onCanvasMouseUp($event)"
+  (contextmenu)="preventContextMenu($event)"
+  (mousemove)="onCanvasMouseMove($event)"
+  >
+  <div class="state" *ngFor="let state of appStateService.globalState?.automata.states"
+  [style.transform]="state.transformPosition"
+  [class.selected]="appStateService.globalState?.automata.selectedState == state"
+  [class.initial]="state.type == 'initial' || state.type == 'ambivalent'"
+  [class.final]="state.type == 'final' || state.type == 'ambivalent'"
+  (mouseup)="onStateMouseUp($event, state)"
+  (mousemove)="onStateMouseMove($event, state)">
+    <div class="finalCircle"></div>
+    <span class="state-name">{{ state.name }}</span>
+    <div class="transition" *ngFor="let transition of state.transitions"
+    [style.transform]="sanitizeStyle(transition.transformPosition)"
+    [style.width.px]="transition.width"
+    [class.self]="transition.origin == transition.destination"
+    [class.selected]="appStateService.globalState?.automata.selectedTransition == transition"
+    [class.rightArrow]="transition.hasRightArrow"
+    [class.leftArrow]="!transition.hasRightArrow"
+    [class.duplicateLayout]="transition.shouldDuplicateLayout != 0"
+    (mousedown)="onTransitionMouseDown($event, transition)"
+    (mouseup)="onTransitionMouseUp($event, transition)">
+      <div class="conditions">
+        <span class="condition" *ngIf="transition.conditions.length > 0">
+          {{ transition.conditionsString }}
+        </span>
+        <span class="condition" *ngIf="transition.conditions.length == 0">&#x3B5;</span>
+      </div>
     </div>
   </div>
+</div>
+
+<div class="context-menu" *ngIf="showContextMenu"
+  [style.bottom.px]="contextMenuBottom"
+  [style.left.px]="contextMenuLeft">
+  <div *ngIf="contextMenuType == 'state'">
+    <label for="stateName">Name</label>
+    <input type="text" [(ngModel)]="this.appStateService.globalState?.automata.selectedState.name">
+
+    <label for="properties">Properties</label>
+    <div class="checkbox-wrapper">
+      <input type="checkbox" name="properties" value="isInitial" id="isInitial"
+      [checked]="appStateService.globalState?.automata.selectedState.type == 'initial'
+                || appStateService.globalState?.automata.selectedState.type == 'ambivalent'"
+      (change)="onToggleStateTypeCheckbox('initial', $event)"> <label for="isInitial">Initial State</label>
+      <input type="checkbox" name="properties" value="isFinal" id="isFinal"
+      [checked]="appStateService.globalState?.automata.selectedState.type == 'final'
+                || appStateService.globalState?.automata.selectedState.type == 'ambivalent'"
+      (change)="onToggleStateTypeCheckbox('final', $event)"> <label for="isFinal">Final State</label>
+    </div>
+    
+  </div>
+</div>

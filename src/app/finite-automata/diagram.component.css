@@ -36,7 +36,7 @@
     left: -45px;
 }
 
-.state.final:after {
+.state.final .finalCircle:after {
     content: "";
     position: absolute;
     pointer-events: none;
@@ -44,6 +44,8 @@
     height: 48px;
     border: #333 solid 1px;
     border-radius: 50%;
+    left: 4px;
+    top: 4px;
 }
 
 .transition {
@@ -90,4 +92,46 @@
     bottom: 0;
     border-left: 8px solid #333;
     transform: rotate(120deg);
+}
+
+.transition .conditions {
+    position: absolute;
+    left: 50%;
+    top: -25px;
+    color: #999;
+}
+
+.transition.duplicateLayout.leftArrow .conditions {
+    top: 0;
+}
+
+.context-menu {
+    position: absolute;
+    padding: 8px;
+    width: 160px;
+    background-color: #fff;
+    box-shadow: 1px 2px 6px 0px #999;
+    z-index: 5;
+}
+
+.context-menu:after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 72px;
+    border-top: #999 solid 10px;
+    border-right: transparent solid 8px;
+    border-left: transparent solid 8px;
+}
+
+.context-menu input[type=text] {
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-size: 16px;
+    height: 30px;
+    padding: 4px;
+}
+
+.context-menu .checkbox-wrapper {
+    margin: 5px 0;
 }

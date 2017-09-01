@@ -1,4 +1,5 @@
 export class Automata {
+    private stateAutoIncrement: number
     type: string;
     states: State[];
     selectedState: State;
@@ -13,11 +14,21 @@ export class Automata {
         this.selectedTransition = null;
         this.alphabet = new Alphabet();
         this.properties = {};
+        this.stateAutoIncrement = 0;
     }
 
     addSymbolToAlphabet(symbol: AlphabetSymbol) {  
         let repeatedSymbol = this.alphabet.hasSymbol(symbol);
         if(!repeatedSymbol) this.alphabet.symbols.push(symbol);
+    }
+
+    createState(position: Coords) {
+        let stateNumber = this.stateAutoIncrement++,
+        state = new State("q" + stateNumber, "normal", new Coords(position.x, position.y));
+        
+        if(stateNumber == 0) state.type = "initial";
+  
+        this.states.push(state);
     }
 
     removeSymbolFromAlphabet(symbol: AlphabetSymbol) {
@@ -28,15 +39,24 @@ export class Automata {
     deleteState(state: State) {
         let index = this.states.indexOf(state);
         this.states.splice(index, 1);
-        for(let i = 0; i < this.states.length; i++) {
-            this.states[i].transitions = this.states[i].transitions.filter((transition) => {
+        this.states.forEach(currentState => {
+            currentState.transitions = currentState.transitions.filter((transition) => {
                 return transition.destination != state;
             });
-            if(i >= index) {
-                this.states[i].name = "q" + i;
-            }
-        }
+        })
     }
+
+    deleteTransition(transition: Transition) {
+        let index = transition.origin.transitions.indexOf(transition);
+        transition.origin.transitions.splice(index, 1);
+        if(transition.shouldDuplicateLayout != 0) {
+            transition.destination.transitions.forEach((tr) => {
+                if(tr.destination == transition.origin) {
+                    tr.shouldDuplicateLayout = 0;
+                }
+            });
+        }
+    }        
 }
 
 export class State {
@@ -58,14 +78,19 @@ export class State {
         return position;
     }
 
-    addTransition(to: State) {
-        let hasTransition = false;
-        for(let i = 0; i < this.transitions.length && !hasTransition; i++) {
-            hasTransition = this.transitions[i].destination == to;
+    addTransition(to: State): Transition {
+        for(let i = 0; i < this.transitions.length; i++) {
+            if(this.transitions[i].destination == to) {
+                return this.transitions[i]; // Prevent duplicate transitions
+            }
         }
-        if(!hasTransition) {
-            this.transitions.push(new Transition(this, to));
-        }
+        
+        this.transitions.push(new Transition(this, to));
+        return this.transitions[this.transitions.length - 1];
+    }
+
+    setType(type: string) {
+        this.type = type;
     }
 }
 
@@ -91,12 +116,32 @@ export class Transition {
         }
     }
 
+    get conditionsString() {
+        let setString = "",
+            lastIndex = this.conditions.length - 1;
+        this.conditions.forEach((symbol, index) => {
+            setString += symbol.symbol;
+            if(index != lastIndex) {
+                setString += ", ";
+            } 
+        });
+        return setString;
+    }
+
+    get midPoint(): Coords {
+        let x = (this.origin.layoutPosition.x + this.destination.layoutPosition.x) / 2,
+        y = (this.origin.layoutPosition.y + this.destination.layoutPosition.y) / 2;
+
+        return new Coords(x, y);
+    }
+
     get transformPosition() {
         if(this.origin == this.destination) {
             return "translate(0, -45px)";
         }
-        let x = (this.origin.layoutPosition.x + this.destination.layoutPosition.x) / 2,
-            y = (this.origin.layoutPosition.y + this.destination.layoutPosition.y) / 2,
+        let midPoint = this.midPoint,
+            x = midPoint.x,
+            y = midPoint.y,
             angle = Math.atan(  (this.destination.layoutPosition.y - this.origin.layoutPosition.y)
                               / (this.destination.layoutPosition.x - this.origin.layoutPosition.x));
         
@@ -147,7 +192,7 @@ export class Alphabet {
         return false;
     }
 
-    getFormalString() {
+    get formalString() {
         let setString = "",
             lastIndex = this.symbols.length - 1;
         this.symbols.forEach((symbol, index) => {

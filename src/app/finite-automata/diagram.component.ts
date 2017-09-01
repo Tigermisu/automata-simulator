@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
 import { AppStateService } from '../app-state.service';
 import { State, Transition, Coords } from '../automata';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
@@ -9,10 +9,50 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
   styleUrls: ['./diagram.component.css']
 })
 export class DiagramComponent implements OnInit, OnDestroy {
-  private lastClickDetails: any = {
-    isMouseDown: false
-  };
+  @ViewChild('canvas') canvasRef: ElementRef;
+  private lastClickDetails: any = { isMouseDown: false };
   draggedState: State = null;
+
+  get showContextMenu() {
+    if(typeof(this.appStateService.globalState) != "undefined") {
+      return (this.appStateService.globalState.automata.selectedState != null 
+                  && this.appStateService.getActiveTool() != "newFiniteTransition")
+              || this.appStateService.globalState.automata.selectedTransition != null; 
+    }
+  }
+
+  get contextMenuType() {
+    if(typeof(this.appStateService.globalState) != "undefined") {
+      if(this.appStateService.globalState.automata.selectedState != null) {
+        return "state";
+      } else if(this.appStateService.globalState.automata.selectedTransition != null) {
+        return "transition";
+      }
+    }
+    return null;
+  }
+
+  get contextMenuBottom() {
+    if(typeof(this.appStateService.globalState) != "undefined") {
+      let bottomOffset = this.canvasRef.nativeElement.offsetHeight + 45;
+      if(this.contextMenuType == "state") {
+        return bottomOffset - this.appStateService.globalState.automata.selectedState.layoutPosition.y;
+      } else if(this.contextMenuType == "transition") {
+        return bottomOffset - this.appStateService.globalState.automata.selectedTransition.midPoint.y - 10;
+      }
+    }
+  
+  }
+
+  get contextMenuLeft() {
+    if(typeof(this.appStateService.globalState) != "undefined") {
+      if(this.contextMenuType == "state") {
+        return this.appStateService.globalState.automata.selectedState.layoutPosition.x + 120;
+      } else if(this.contextMenuType == "transition") {
+        return this.appStateService.globalState.automata.selectedTransition.midPoint.x + 125;
+      }
+    }    
+  }
 
   constructor(private appStateService: AppStateService,
               private sanitizer: DomSanitizer) {}
@@ -26,12 +66,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
   }
 
   createState(position) {
-    let stateNumber = this.appStateService.globalState.automata.states.length,
-      state = new State("q" + stateNumber, "normal", new Coords(position.x, position.y));
-      
-      if(stateNumber == 0) state.type = "initial";
-
-      this.appStateService.globalState.automata.states.push(state);
+      this.appStateService.globalState.automata.createState(position);
     }
 
   onCanvasMouseDown($event: MouseEvent) {
@@ -69,12 +104,14 @@ export class DiagramComponent implements OnInit, OnDestroy {
         target: $event.target
       };
 
-      let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
-        new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
-      );
+      if(clickDetails.button == 0) {
+        let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
+          new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
+        );
 
-      if(distance < 64) {
-        this.processCanvasLeftClick(clickDetails);
+        if(distance < 64) {
+          this.processCanvasLeftClick(clickDetails);
+        }
       }
     }
   }
@@ -89,8 +126,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
       case 'newFiniteState':
         this.createState({x: clickDetails.x - 200, y: clickDetails.y - 88});
         break;
-      default:
-        console.warn("Unrecognized tool:", activeTool);
+      default:      
+          this.appStateService.globalState.automata.selectedState = null;
+          this.appStateService.globalState.automata.selectedTransition = null;
       }
   }
 
@@ -103,12 +141,23 @@ export class DiagramComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCanvasMouseMove($event) {
+  onCanvasMouseMove($event: MouseEvent) {
     if(this.draggedState != null) {
       this.draggedState.layoutPosition = new Coords(
         this.draggedState.layoutPosition.x = $event.pageX - 200,
         this.draggedState.layoutPosition.y = $event.pageY - 88
       );
+    } else if(this.lastClickDetails.isMouseDown && $event.buttons == 2) {
+      let deltaX = $event.pageX - this.lastClickDetails.x,
+        deltaY = $event.pageY - this.lastClickDetails.y;
+
+      this.lastClickDetails.x = $event.pageX;
+      this.lastClickDetails.y = $event.pageY;
+
+      this.appStateService.globalState.automata.states.forEach((state) => {
+        state.layoutPosition.x += deltaX;
+        state.layoutPosition.y += deltaY;
+      });
     }
   }
 
@@ -144,13 +193,18 @@ export class DiagramComponent implements OnInit, OnDestroy {
         target: $event.target
       };
 
-      let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
-        new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
-      );
+    let distance = new Coords(clickDetails.x, clickDetails.y).squareDistanceTo(
+      new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
+    );
 
       if(distance < 64) {
-        this.processStateLeftClick(clickDetails, state);
-        console.info("Got left click on state", $event);
+
+        if(clickDetails.button == 0) {
+          this.processStateLeftClick(clickDetails, state);
+          console.info("Got left click on state", $event);
+        } else {
+          this.processStateRightClick(clickDetails, state);
+        }
       }
     }
   }
@@ -191,17 +245,42 @@ export class DiagramComponent implements OnInit, OnDestroy {
     switch(activeTool) {
       case 'newFiniteTransition':
         if(this.appStateService.globalState.automata.selectedState != null) {
-          this.addTransition(this.appStateService.globalState.automata.selectedState, state);
-          this.appStateService.globalState.automata.selectedState = null;
-          break;
+          let transition = this.addTransition(this.appStateService.globalState.automata.selectedState, state);
+          this.appStateService.globalState.automata.selectedState = null;    
+          this.appStateService.globalState.automata.selectedTransition = transition;      
+        } else {
+          this.appStateService.globalState.automata.selectedTransition = null;
+          this.appStateService.globalState.automata.selectedState = state;
         }
+        break;
       default:
-        this.appStateService.globalState.automata.selectedState = state;
+          this.appStateService.globalState.automata.selectedTransition = null;
+          this.appStateService.globalState.automata.selectedState = state;
       }
   }
 
-  addTransition(from: State, to: State) {
-    from.addTransition(to);
+  processStateRightClick(clickDetails, state: State) {
+    
+  }
+
+  onToggleStateTypeCheckbox(checkboxType: string, event: Event) {
+    let currentType = this.appStateService.globalState.automata.selectedState.type;
+    if((currentType == "initial" && checkboxType == "initial") 
+        || (currentType == "final" && checkboxType == "final")) {
+      this.appStateService.globalState.automata.selectedState.setType("normal");
+    } else if((currentType == "initial" && checkboxType == "final")
+            || (currentType == "final" && checkboxType == "initial")) {
+      this.appStateService.globalState.automata.selectedState.setType("ambivalent");
+    } else if((currentType == "normal" && checkboxType == "initial")
+            || (currentType == "ambivalent" && checkboxType == "final")) {
+      this.appStateService.globalState.automata.selectedState.setType("initial");
+    } else {
+      this.appStateService.globalState.automata.selectedState.setType("final");
+    }
+  }
+
+  addTransition(from: State, to: State): Transition {
+    return from.addTransition(to);
   }
 
   sanitizeStyle(unsafeStyle: string): SafeStyle {

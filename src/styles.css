@@ -29,7 +29,7 @@ a span {
 }
 
 .topbar, .toolbar, .sidebar {
-    position: relative;
+    position: fixed;
     z-index: 1;
 }
 
@@ -39,6 +39,7 @@ a span {
     width: 100%;
     padding: 8px 16px;
     color: #333;
+    top: 0;
 }
 
 .topbar > .brand, .topbar > .title {
@@ -64,6 +65,8 @@ a span {
 }
 
 .sidebar {
+    left: 0;
+    top: 88px;
     height: calc(100% - 40px);
     width: 200px;
     background-color: #f0f0f0;
@@ -87,9 +90,11 @@ a span {
 }
 
 .diagram-wrapper {
-    width: calc(100% - 200px);
-    height: calc(100% - 40px);
-    float: right;
+    padding-left: 200px;
+    padding-top: 88px;
+    height: 100vh;
+    background-color: #fff;
+    overflow: hidden;
 }
 
 .toolbar {
@@ -99,7 +104,7 @@ a span {
     border-bottom: #d0d0d0 solid 1px;
     padding: 4px;
     user-select: none;
-    position: relative;
+    top: 48px;
 }
 
 .toolbar .contextual-tools, .toolbar .general-tools {
@@ -211,15 +216,15 @@ a span {
     margin-bottom: 0;
 }
 
-.radio-wrapper {
+.radio-wrapper, .checkbox-wrapper {
     margin: 10px 0 20px;
 }
 
-.radio-wrapper label {
+.radio-wrapper label, .checkbox-wrapper label {
     font-size: 14px;
 }
 
-.radio-wrapper label:after {
+.radio-wrapper label:after, .checkbox-wrapper label:after {
     content: "";
     display: block;
 }

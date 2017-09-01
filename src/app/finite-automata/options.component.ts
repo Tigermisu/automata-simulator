@@ -24,7 +24,9 @@ export class OptionsComponent {
       let symbolArray = this.editorSymbol.trim().split(',');
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
-        this.appStateService.globalState.automata.addSymbolToAlphabet(symbol);
+        if(symbol.symbol != "") {
+          this.appStateService.globalState.automata.addSymbolToAlphabet(symbol);
+        }
       });
     }
     this.editorSymbol = "";
