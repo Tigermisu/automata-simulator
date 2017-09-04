@@ -99,10 +99,20 @@
     left: 50%;
     top: -25px;
     color: #999;
+    transform: translate(-50%);
 }
 
 .transition.duplicateLayout.leftArrow .conditions {
     top: 0;
+}
+
+.transition.self .conditions {
+    min-width: 100px;
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    bottom: 45px;
+    top: initial;
 }
 
 .context-menu {
@@ -134,4 +144,32 @@
 
 .context-menu .checkbox-wrapper {
     margin: 5px 0;
+}
+
+.context-menu .alphabet-symbols {
+    margin: 0;
+
+}
+
+.context-menu .plus-adder input {
+    max-width: calc(100% - 30px);
+    margin: 0;
+}
+
+.context-menu .plus-adder button {
+    width: 30px;
+    height: 30px;
+}
+
+.context-menu .formal-string {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 10px;
+    color: #bcbcbc;
+}
+
+.context-menu .alphabet-symbols .symbol-entry {
+    margin: 1px;
+    padding: 2px;
 }

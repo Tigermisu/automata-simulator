@@ -52,4 +52,8 @@ export class AppStateService {
         return this.toolbarComponent.getSelectedTool();
     }
 
+    deselectTool() {
+        this.toolbarComponent.deselectTool();
+    }
+
 }

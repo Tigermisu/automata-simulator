@@ -49,6 +49,10 @@ export class ToolbarComponent implements OnInit {
     console.log(JSON.stringify(this.appStateService.globalState));
   }
 
+  deselectTool() {
+    this.selectedTool = null;
+  }
+
   selectTool(tool: string) {
     if(this.selectedTool != tool) {
       this.selectedTool = tool;

@@ -17,11 +17,6 @@ export class Automata {
         this.stateAutoIncrement = 0;
     }
 
-    addSymbolToAlphabet(symbol: AlphabetSymbol) {  
-        let repeatedSymbol = this.alphabet.hasSymbol(symbol);
-        if(!repeatedSymbol) this.alphabet.symbols.push(symbol);
-    }
-
     createState(position: Coords) {
         let stateNumber = this.stateAutoIncrement++,
         state = new State("q" + stateNumber, "normal", new Coords(position.x, position.y));
@@ -29,11 +24,6 @@ export class Automata {
         if(stateNumber == 0) state.type = "initial";
   
         this.states.push(state);
-    }
-
-    removeSymbolFromAlphabet(symbol: AlphabetSymbol) {
-        let index = this.alphabet.symbols.indexOf(symbol);
-        if(index != -1) this.alphabet.symbols.splice(index, 1);
     }
 
     deleteState(state: State) {
@@ -56,7 +46,13 @@ export class Automata {
                 }
             });
         }
-    }        
+    }       
+    
+    addConditionToTransition(transition: Transition, condition: AlphabetSymbol) {
+        if(this.alphabet.hasSymbol(condition)) {
+            transition.addCondition(condition);
+        }
+    }
 }
 
 export class State {
@@ -117,15 +113,18 @@ export class Transition {
     }
 
     get conditionsString() {
-        let setString = "",
-            lastIndex = this.conditions.length - 1;
-        this.conditions.forEach((symbol, index) => {
-            setString += symbol.symbol;
-            if(index != lastIndex) {
-                setString += ", ";
-            } 
-        });
-        return setString;
+        if(this.conditions.length > 0) {
+            let setString = "",
+                lastIndex = this.conditions.length - 1;
+            this.conditions.forEach((symbol, index) => {
+                setString += symbol.symbol;
+                if(index != lastIndex) {
+                    setString += ", ";
+                } 
+            });
+            return setString;
+        }
+        return "\u2205";
     }
 
     get midPoint(): Coords {
@@ -176,6 +175,29 @@ export class Transition {
         }
         return this.origin.layoutPosition.distanceTo(this.destination.layoutPosition) - 60;
     }
+
+    hasCondition(condition: AlphabetSymbol) {
+        for(let i = 0; i < this.conditions.length; i++) {
+            if(this.conditions[i].symbol == condition.symbol) return true;
+        }
+        return false;
+    }
+
+    addCondition(condition: AlphabetSymbol) {
+        if(!this.hasCondition(condition)) {
+            this.conditions.push(condition);
+            this.conditions.sort((a, b) => {
+                if(a.symbol < b.symbol) return -1;
+                if(a.symbol > b.symbol) return 1;
+                return 0;
+            });   
+        }
+    }
+
+    removeCondition(condition: AlphabetSymbol) {
+        let index = this.conditions.indexOf(condition);
+        if(index != -1) this.conditions.splice(index, 1);
+    }
 }
 
 export class Alphabet {
@@ -183,6 +205,23 @@ export class Alphabet {
 
     constructor() {
         this.symbols = [];
+    }        
+
+    addSymbol(symbol: AlphabetSymbol) {  
+        let repeatedSymbol = this.hasSymbol(symbol);
+        if(!repeatedSymbol) {
+            this.symbols.push(symbol);
+            this.symbols.sort((a, b) => {
+                if(a.symbol < b.symbol) return -1;
+                if(a.symbol > b.symbol) return 1;
+                return 0;
+            });
+        }
+    }
+
+    removeSymbol(symbol: AlphabetSymbol) {
+        let index = this.symbols.indexOf(symbol);
+        if(index != -1) this.symbols.splice(index, 1);
     }
 
     hasSymbol(symbol: AlphabetSymbol) {
@@ -193,15 +232,18 @@ export class Alphabet {
     }
 
     get formalString() {
-        let setString = "",
-            lastIndex = this.symbols.length - 1;
-        this.symbols.forEach((symbol, index) => {
-            setString += symbol.symbol;
-            if(index != lastIndex) {
-                setString += ", ";
-            } 
-        });
-        return '\u03A3 = {' + setString + '}';
+        if(this.symbols.length > 0) {
+            let setString = "",
+                lastIndex = this.symbols.length - 1;
+            this.symbols.forEach((symbol, index) => {
+                setString += symbol.symbol;
+                if(index != lastIndex) {
+                    setString += ", ";
+                } 
+            });
+            return '\u03A3 = {' + setString + '}';
+        }
+        return '\u03A3 = { \u2205 }';        
     }
 }
 

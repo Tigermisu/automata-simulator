@@ -24,10 +24,17 @@
     (mousedown)="onTransitionMouseDown($event, transition)"
     (mouseup)="onTransitionMouseUp($event, transition)">
       <div class="conditions">
-        <span class="condition" *ngIf="transition.conditions.length > 0">
-          {{ transition.conditionsString }}
+        <span class="condition" *ngIf="transition.conditions.length > 0;else kleenClosure">
+          <span *ngIf="transition.conditions.length < appStateService.globalState?.automata.alphabet.symbols.length;else sigmaSpan">
+              {{ transition.conditionsString }}
+          </span>
+          <ng-template #sigmaSpan>
+              &#x3A3;
+          </ng-template>
         </span>
-        <span class="condition" *ngIf="transition.conditions.length == 0">&#x3B5;</span>
+        <ng-template #kleenClosure>
+          <span class="condition" *ngIf="transition.conditions.length == 0">&#x3B5;</span>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -52,5 +59,21 @@
       (change)="onToggleStateTypeCheckbox('final', $event)"> <label for="isFinal">Final State</label>
     </div>
     
+  </div>
+  <div *ngIf="contextMenuType == 'transition'">
+    <div class="alphabet-symbols">
+      <div class="symbol-entry" *ngFor="let condition of appStateService.globalState?.automata.selectedTransition.conditions">
+        {{ condition }}
+        <span class="remove" (click)="removeConditionFromTransition(condition)">x</span>
+      </div>
+      <span *ngIf="appStateService.globalState?.automata.selectedTransition.conditions.length == 0">
+        An empty transition defaults to &#x3B5;
+      </span>
+      <span class="formal-string">{{ appStateService.globalState?.automata.alphabet.formalString }}</span>
+    </div>
+    <div class="plus-adder">
+      <input type="text" id="alphabet" [(ngModel)]="conditionInput" (keyup.enter)="addConditionToTransition()">
+      <button (click)="addConditionToTransition()">+</button>
+    </div>
   </div>
 </div>

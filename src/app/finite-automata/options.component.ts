@@ -16,7 +16,7 @@ export class OptionsComponent {
   }
 
   removeSymbolFromAlphabet(symbolToRemove: AlphabetSymbol) {
-    this.appStateService.globalState.automata.removeSymbolFromAlphabet(symbolToRemove);
+    this.appStateService.globalState.automata.alphabet.removeSymbol(symbolToRemove);
   }
 
   addSymbolToAlphabet() {      
@@ -25,7 +25,7 @@ export class OptionsComponent {
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
-          this.appStateService.globalState.automata.addSymbolToAlphabet(symbol);
+          this.appStateService.globalState.automata.alphabet.addSymbol(symbol);
         }
       });
     }

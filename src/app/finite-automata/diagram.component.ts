@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
 import { AppStateService } from '../app-state.service';
-import { State, Transition, Coords } from '../automata';
+import { State, Transition, Coords, AlphabetSymbol } from '../automata';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 
@@ -12,6 +12,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvasRef: ElementRef;
   private lastClickDetails: any = { isMouseDown: false };
   draggedState: State = null;
+  conditionInput: string;
 
   get showContextMenu() {
     if(typeof(this.appStateService.globalState) != "undefined") {
@@ -236,6 +237,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
   }
 
   processTransitionLeftClick(clickDetails, transition: Transition) {
+    this.appStateService.deselectTool();
     this.appStateService.globalState.automata.selectedTransition = transition;
   }
 
@@ -285,6 +287,24 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
   sanitizeStyle(unsafeStyle: string): SafeStyle {
     return this.sanitizer.bypassSecurityTrustStyle(unsafeStyle);
+  }
+
+  removeConditionFromTransition(condition: AlphabetSymbol) {
+    this.appStateService.globalState.automata.selectedTransition.removeCondition(condition);
+  }
+
+  addConditionToTransition() {
+    if(this.conditionInput.trim() != '') { // Prevent empty symbols
+      let symbolArray = this.conditionInput.trim().split(',');
+      symbolArray.forEach((stringSymbol) => {
+        let symbol = new AlphabetSymbol(stringSymbol.trim());
+        if(symbol.symbol != "") {
+          this.appStateService.globalState.automata.addConditionToTransition(
+                this.appStateService.globalState.automata.selectedTransition, symbol);
+        }
+      });
+    }
+    this.conditionInput = "";
   }
 
 }
