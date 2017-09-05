@@ -6,7 +6,7 @@
     <label for="speed">Speed: <span>{{ simSpeed }}</span></label>
     <input type="range" [(ngModel)]="speed" id="speed">
 
-    <button (click)="toggleState()">Start</button>
+    <button (click)="toggleState()">{{ startText }}</button>
     <button (click)="step()">Step</button>
     <button (click)="reset()">Reset</button>
   </div>
