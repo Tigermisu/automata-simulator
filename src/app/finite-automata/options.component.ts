@@ -1,22 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppStateService } from '../app-state.service';
 import { AlphabetSymbol } from '../automata';
+import { FiniteAutomata } from './finite-automata';
 
 
 @Component({
   templateUrl: './options.component.html'
 })
-export class OptionsComponent {
-  editorSymbol: string;
+export class OptionsComponent implements OnInit {
+  private editorSymbol: string;
+  private automata: FiniteAutomata;
 
   constructor(private appStateService: AppStateService) {}
 
-  setFiniteAsDeterministic(isDeterministic: Boolean) {
-    this.appStateService.globalState.automata.properties.isDeterministic = isDeterministic;
+  ngOnInit() {
+    this.automata = this.appStateService.project as FiniteAutomata;
+  }
+
+  setFiniteAsDeterministic(isDeterministic: boolean) {
+    this.automata.isDeterministic = isDeterministic;
   }
 
   removeSymbolFromAlphabet(symbolToRemove: AlphabetSymbol) {
-    this.appStateService.globalState.automata.alphabet.removeSymbol(symbolToRemove);
+    this.automata.removeSymbol(symbolToRemove);
   }
 
   addSymbolToAlphabet() {      
@@ -25,7 +31,7 @@ export class OptionsComponent {
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
-          this.appStateService.globalState.automata.alphabet.addSymbol(symbol);
+          this.automata.alphabet.addSymbol(symbol);
         }
       });
     }

@@ -1,21 +1,18 @@
-export class Automata {
-    private stateAutoIncrement: number
-    type: string;
+import { Project } from './project';
+
+export class Automata extends Project {
+    private stateAutoIncrement: number;
     states: State[];
     selectedState: State;
     selectedTransition: Transition;
     alphabet: Alphabet;
-    activeElement: any;
-    incorrectElement: any;
-    properties;
 
     constructor(type: string) {
-        this.type = type;
+        super(type);
         this.states = [];
         this.selectedState = null;
         this.selectedTransition = null;
         this.alphabet = new Alphabet();
-        this.properties = {};
         this.stateAutoIncrement = 0;
     }
 
@@ -54,6 +51,19 @@ export class Automata {
         if(this.alphabet.hasSymbol(condition)) {
             transition.addCondition(condition);
         }
+    }
+
+    removeSymbol(symbol: AlphabetSymbol) {
+        let index = this.alphabet.symbols.indexOf(symbol);
+        if(index != -1) this.alphabet.symbols.splice(index, 1);
+
+        this.states.forEach((state) => { // Erase these symbols if they are used in a transition
+            state.transitions.forEach((transition) => {
+                if(transition.hasCondition(symbol)) {
+                    transition.removeCondition(symbol);
+                }
+            });
+        })
     }
 }
 

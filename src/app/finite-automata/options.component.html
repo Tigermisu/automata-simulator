@@ -1,31 +1,31 @@
 <div class="text-wrapper">
   <h2>Options</h2>
   <label for="projectTitle">Automata Title</label>
-  <input type="text" id="projectTitle" [(ngModel)]="appStateService.globalState?.metadata.title">
+  <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title">
 
   <label for="projectType">Automata Type</label>
   <div class="radio-wrapper">
     <input type="radio" name="automataType" value="deterministic" id="deterministic"
-    [checked]="appStateService.globalState?.automata.properties.isDeterministic" 
+    [checked]="automata.isDeterministic" 
     (change)="setFiniteAsDeterministic(true)"> <label for="deterministic">Deterministic</label>
     <input type="radio" name="automataType" value="nondeterministic" id="nondeterministic"
-    [checked]="!appStateService.globalState?.automata.properties.isDeterministic" 
+    [checked]="!automata.isDeterministic" 
     (change)="setFiniteAsDeterministic(false)"> <label for="nondeterministic">Non-Deterministic</label>
   </div>
 
   <label for="alphabet">Alphabet</label>
   <div class="alphabet-symbols">
-    <div class="symbol-entry" *ngFor="let symbol of appStateService.globalState?.automata.alphabet.symbols">
+    <div class="symbol-entry" *ngFor="let symbol of automata.alphabet.symbols">
       {{ symbol }}
       <span class="remove" (click)="removeSymbolFromAlphabet(symbol)">x</span>
     </div>
-    <span *ngIf="appStateService.globalState?.automata.alphabet.symbols.length == 0">
+    <span *ngIf="automata.alphabet.symbols.length == 0">
       The current alphabet contains no symbols.
     </span>
 
-    <span *ngIf="appStateService.globalState?.automata.alphabet.symbols.length > 0">
+    <span *ngIf="automata.alphabet.symbols.length > 0">
      <br>
-      {{ appStateService.globalState?.automata.alphabet.formalString }}
+      {{ automata.alphabet.formalString }}
     </span>
   </div>
   <div class="plus-adder">

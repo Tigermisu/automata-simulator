@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
 import { AppStateService } from '../app-state.service';
 import { Automata, State, Transition, Coords, AlphabetSymbol } from '../automata';
+import { FiniteAutomata } from './finite-automata';
 
 declare var alertify;
 
@@ -13,6 +14,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   inputWord: string = "";
   speed: number = 50;
   simulation: Simulation;
+  automata: FiniteAutomata;
 
   get simSpeed(): number {
     return this.speed;
@@ -21,7 +23,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   get startText(): string {
     if(typeof(this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
       return "Pause";
-    } else if(this.simulation.hasRemainingElements()) {
+    } else if(this.simulation != null  && this.simulation.hasRemainingElements()) {
       return "Resume";
     } else if(this.simulation != null) {
       return "Restart";
@@ -32,6 +34,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   constructor(private appStateService: AppStateService) {}
   
   ngOnInit() {
+    this.automata = this.appStateService.project as FiniteAutomata;
     alertify.logPosition("top right");
   }
 
@@ -45,12 +48,15 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       return this.outputError(error);
     }
 
-    if(typeof(this.simulation) == "undefined" || this.simulation == null) {
-      this.startSimulation();
-    } else if(this.simulation.isRunning) {
+    if(typeof(this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
       this.stopSimulation();
-    } else {
+    } else if(this.simulation != null  && this.simulation.hasRemainingElements()) {
       this.resumeSimulation();
+    } else if(this.simulation != null) {
+      this.reset();
+      this.startSimulation();
+    } else {
+      this.startSimulation();      
     }
   }
 
@@ -71,7 +77,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   createSimulation(): boolean {
     if(this.validateWord(this.inputWord)) {
-      this.simulation = new Simulation(this.appStateService.globalState.automata);
+      this.simulation = new Simulation(this.automata);
       this.simulation.initializeSimulation(this.inputWord);
       return true;
     } else {
@@ -101,26 +107,28 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     console.log(error);
     alertify.error(error.errorMessage);
     if(error.culprit != null) {
-      this.appStateService.globalState.automata.incorrectElement = error.culprit;
+      this.automata.incorrectElement = error.culprit;
     }
     setTimeout(() => {
-      this.appStateService.globalState.automata.incorrectElement = null;
+      this.automata.incorrectElement = null;
     }, 5000);
   }
 
   reset() {
-    this.simulation.stopInterval();
-    this.appStateService.globalState.automata.activeElement = null;
-    this.simulation = null;
+    this.automata.activeElement = null;
+    if(this.simulation != null) {
+      this.simulation.stopInterval();
+      this.simulation = null;
+    }
   }
 
   // Returns null if the automata is valid, else the error object
   validateAutomata(): ValidationError {
-    let automata = this.appStateService.globalState.automata, 
+    let automata = this.automata, 
       initialStates = 0,
       finalStates = 0,
       alphabetSymbols = automata.alphabet.symbols.length,
-      isDeterministic = automata.properties.isDeterministic;
+      isDeterministic = automata.isDeterministic;
     
     for(let i = 0; i < automata.states.length; i++) {
       let state = automata.states[i];
@@ -173,7 +181,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   }
 
   validateWord(word: string) {
-    let alphabet = this.appStateService.globalState.automata.alphabet.symbols;
+    let alphabet = this.automata.alphabet.symbols;
     for(let i = 0; i < word.length; i++) {
       let contained = false;
       for(let j = 0; j < alphabet.length; j++) {
@@ -193,7 +201,7 @@ class Simulation {
   inputWord: string;
   initialState: State;
   stepInterval: any;
-  automata: Automata;
+  automata: FiniteAutomata;
   traversalStack: TraversalElement[];
   currentElement: TraversalElement;
   lastDepth: number;
@@ -204,7 +212,7 @@ class Simulation {
     return this.stepInterval != null;
   }
 
-  constructor(automata: Automata) {
+  constructor(automata: FiniteAutomata) {
     this.automata = automata;
     this.stepInterval = null;
 
@@ -249,13 +257,11 @@ class Simulation {
         this.stopInterval();
       }
       if(this.lastDepth + 1 < this.inputWord.length && !this.reachedValidity) {
-        // We ran out of states and we still hadn't processed the word or validated it in another branch
+        // We ran out of states and we still hadn't processed the word or validated it in another branch       
         alertify.log("The word is invalid");
       }
       return; // Stop the step
     } 
-
-    this.lastDepth == this.currentElement.depth;
 
     if(this.currentElement.type == "state") {
       let stateTraversalElement = this.currentElement as TraversalState,
@@ -263,13 +269,14 @@ class Simulation {
         inputSymbol = this.inputWord[stateTraversalElement.depth];
 
       this.automata.activeElement = state;
+      this.lastDepth =stateTraversalElement.depth;
       
       if(typeof(inputSymbol) == "undefined") { // We reached the end of the word
         if(state.type == "final" || state.type == "ambivalent") {
           alertify.success("The word is valid");
           this.reachedValidity = true; // If this is a final state, we win!
         } else if(this.traversalStack.length == 0 && !this.reachedValidity) {
-          alertify.log("The word is invalid"); // Else, we lose.
+          alertify.log("The word is invalid"); // Else, if there is nothing more in the stack we lose.
         }
       } else { // If we still have a word, get ready to branch
         for(let i = state.transitions.length - 1; i >= 0; i--) {

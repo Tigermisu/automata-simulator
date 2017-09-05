@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
-import { GlobalState, Metadata } from './global-state';
-import { Automata } from './automata';
+import { Project, Metadata } from './project';
 
 import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar.component';
@@ -10,18 +9,28 @@ import { ToolbarComponent } from './toolbar.component';
 export class AppStateService {
     private appComponent: AppComponent;
     private toolbarComponent: ToolbarComponent;
-    globalState: GlobalState;
+    private activeProject: Project;
 
     constructor(private location: PlatformLocation) {
-        console.info("Created App State Service");
-        
         this.location.onPopState(() => {
             let location = window.location.href;
             if(location.split("/").pop() == "home") {
                 this.resetState();
             }
          }); 
-    }   
+    }
+
+    get hasActiveProject() {
+        return typeof this.activeProject !== "undefined";
+    }
+
+    get project() {
+        return this.activeProject;
+    }
+
+    set project(projectInstance: Project) {
+        this.activeProject = projectInstance;
+    }
 
     registerAppComponent(app: AppComponent) {
         this.appComponent = app;
@@ -31,13 +40,8 @@ export class AppStateService {
         this.toolbarComponent = toolbar;
     }
 
-    startNewProject(type: string) {
-        this.globalState = new GlobalState(type);
-        console.info("Created new global state:", this.globalState);
-    }
-
     resetState() {
-        this.globalState = undefined;
+        this.activeProject = undefined;
     }
 
     requestToolbar(toolbarName: string) {

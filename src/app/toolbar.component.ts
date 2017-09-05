@@ -31,19 +31,21 @@ export class ToolbarComponent implements OnInit {
   }
 
   deleteSelection() {
-    if(this.appStateService.globalState.automata.selectedState != null) {
-      this.appStateService.globalState.automata.deleteState(
-              this.appStateService.globalState.automata.selectedState);
-      this.appStateService.globalState.automata.selectedState = null;
-    } else if(this.appStateService.globalState.automata.selectedTransition != null) {
-      this.appStateService.globalState.automata.deleteTransition(
-              this.appStateService.globalState.automata.selectedTransition);
-      this.appStateService.globalState.automata.selectedTransition = null;
+    /*
+    if(this.appStateService.project.selectedState != null) {
+      this.appStateService.project.deleteState(
+              this.appStateService.project.selectedState);
+      this.appStateService.project.selectedState = null;
+    } else if(this.appStateService.project.selectedTransition != null) {
+      this.appStateService.project.deleteTransition(
+              this.appStateService.project.selectedTransition);
+      this.appStateService.project.selectedTransition = null;
     }
+    */
   }
 
   saveAutomata() {
-    console.log(JSON.stringify(this.appStateService.globalState));
+    console.log(JSON.stringify(this.appStateService.project));
   }
 
   deselectTool() {
@@ -55,8 +57,10 @@ export class ToolbarComponent implements OnInit {
       this.selectedTool = tool;
     } else {
       this.selectedTool = null;
-      this.appStateService.globalState.automata.selectedTransition = null;
-      this.appStateService.globalState.automata.selectedState = null;
+      /*
+      this.appStateService.project.selectedTransition = null;
+      this.appStateService.project.selectedState = null;
+      */
     }
   }
 }

@@ -8,8 +8,4 @@ import { AppStateService } from './app-state.service';
 })
 export class MainMenuComponent {
   constructor(private appStateService: AppStateService) {}
-  
-  startNewProject(type: string) {
-    this.appStateService.startNewProject(type);
-  }
 }

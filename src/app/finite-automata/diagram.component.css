@@ -76,14 +76,24 @@
 
 .transition.rightArrow:after {
     right: -1px;
-    top: -8px;
+    top: -6.5px;
     border-left: 8px solid #333;
 }
 
 .transition.leftArrow:after {
     left: -1px;
-    top: -8px;
+    top: -6.5px;
     border-right: 8px solid #333;
+}
+
+.transition:not(.self).selected.leftArrow:after, .transition:not(.self).active.leftArrow:after {
+    top: -7.5px;
+    left: -2px;
+}
+
+.transition:not(.self).selected.rightArrow:after, .transition:not(.self).active.rightArrow:after {
+    top: -7.5px;
+    right: -2px;
 }
 
 .transition.self:after {

@@ -1,12 +1,11 @@
-import { Automata } from './automata';
-
-export class GlobalState {
+export class Project {    
+    type: string;
+    activeElement: any;
+    incorrectElement: any;
     metadata: Metadata;
-    automata: Automata;
 
     constructor(type: string) {
-        this.metadata = new Metadata("New Project");
-        this.automata = new Automata(type);
+        this.type = type;
     }
 }
 
