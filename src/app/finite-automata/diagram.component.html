@@ -6,6 +6,8 @@
   >
   <div class="state" *ngFor="let state of appStateService.globalState?.automata.states"
   [style.transform]="state.transformPosition"
+  [class.active]="appStateService.globalState?.automata.activeElement == state"
+  [class.incorrect]="appStateService.globalState?.automata.incorrectElement == state"
   [class.selected]="appStateService.globalState?.automata.selectedState == state"
   [class.initial]="state.type == 'initial' || state.type == 'ambivalent'"
   [class.final]="state.type == 'final' || state.type == 'ambivalent'"
@@ -19,6 +21,7 @@
     [class.self]="transition.origin == transition.destination"
     [class.selected]="appStateService.globalState?.automata.selectedTransition == transition"
     [class.rightArrow]="transition.hasRightArrow"
+    [class.active]="appStateService.globalState?.automata.activeElement == transition"
     [class.leftArrow]="!transition.hasRightArrow"
     [class.duplicateLayout]="transition.shouldDuplicateLayout != 0"
     (mousedown)="onTransitionMouseDown($event, transition)"
@@ -39,6 +42,8 @@
     </div>
   </div>
 </div>
+
+<router-outlet></router-outlet>
 
 <div class="context-menu" *ngIf="showContextMenu"
   [style.bottom.px]="contextMenuBottom"

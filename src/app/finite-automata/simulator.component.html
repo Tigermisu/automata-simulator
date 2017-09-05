@@ -1,0 +1,16 @@
+<div class="simulator-panel">
+  <div class="simulator-options">
+    <label for="word">Input Word</label>
+    <input type="text" [(ngModel)]="inputWord" id="word">
+
+    <label for="speed">Speed: <span>{{ simSpeed }}</span></label>
+    <input type="range" [(ngModel)]="speed" id="speed">
+
+    <button (click)="toggleState()">Start</button>
+    <button (click)="step()">Step</button>
+    <button (click)="reset()">Reset</button>
+  </div>
+  <div class="simulator-output">
+    
+  </div>
+</div>

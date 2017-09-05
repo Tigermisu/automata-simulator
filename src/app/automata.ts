@@ -5,6 +5,8 @@ export class Automata {
     selectedState: State;
     selectedTransition: Transition;
     alphabet: Alphabet;
+    activeElement: any;
+    incorrectElement: any;
     properties;
 
     constructor(type: string) {

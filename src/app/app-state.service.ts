@@ -41,11 +41,11 @@ export class AppStateService {
     }
 
     requestToolbar(toolbarName: string) {
-        this.toolbarComponent.activateToolbar(toolbarName);
+        this.toolbarComponent.activateToolbar(toolbarName, true);
     }
 
-    releaseToolbar() {
-        this.toolbarComponent.activateToolbar(null);
+    releaseToolbar(toolbarName: string) {
+        this.toolbarComponent.activateToolbar(toolbarName, false);
     }
 
     getActiveTool() {

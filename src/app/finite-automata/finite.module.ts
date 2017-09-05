@@ -6,6 +6,7 @@ import { FiniteRoutingModule } from './finite-routing.module';
 import { FiniteComponent } from './finite.component';
 import { DiagramComponent } from './diagram.component';
 import { TableComponent } from './table.component';
+import { SimulatorComponent } from './simulator.component';
 import { OptionsComponent } from './options.component';
 
 @NgModule({
@@ -13,6 +14,7 @@ import { OptionsComponent } from './options.component';
     FiniteComponent,
     DiagramComponent,
     TableComponent,
+    SimulatorComponent,
     OptionsComponent
   ],
   imports: [

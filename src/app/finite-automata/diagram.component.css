@@ -75,14 +75,14 @@
 }
 
 .transition.rightArrow:after {
-    right: 0;
-    top: -6px;
+    right: -1px;
+    top: -8px;
     border-left: 8px solid #333;
 }
 
 .transition.leftArrow:after {
-    left: 0;
-    top: -6px;
+    left: -1px;
+    top: -8px;
     border-right: 8px solid #333;
 }
 
@@ -172,4 +172,29 @@
 .context-menu .alphabet-symbols .symbol-entry {
     margin: 1px;
     padding: 2px;
+}
+
+.state.active {
+    background-color: #67b2e4;
+}
+
+.transition.active {
+    border-color: #3498db;
+    border-width: 3px;
+}
+
+.transition.active.self {
+    border-bottom-color: transparent;
+}
+
+.transition.active.leftArrow:after {
+    border-right-color: #3498db;
+}
+
+.transition.active.rightArrow:after {
+    border-left-color: #3498db;
+}
+
+.state.incorrect {
+    background-color: #e74c3c;
 }

@@ -63,7 +63,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.appStateService.releaseToolbar();
+    this.appStateService.releaseToolbar('finite-automata');
   }
 
   createState(position) {

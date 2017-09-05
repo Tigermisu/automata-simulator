@@ -81,6 +81,10 @@ a span {
     padding: 8px 16px;
 }
 
+.sidebar .menu-item.indent {
+    padding-left: 32px;
+}
+
 .sidebar .menu-item > span {    
     user-select: none;
 }
@@ -274,4 +278,8 @@ a span {
     height: 40px;
     float: right;
     cursor: pointer;
+}
+
+.alertify-logs {
+    z-index: 500 !important;
 }

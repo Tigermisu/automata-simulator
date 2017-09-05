@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DiagramComponent }   from './diagram.component';
 import { FiniteComponent } from './finite.component';
 import { TableComponent } from './table.component';
+import { SimulatorComponent } from './simulator.component';
 import { OptionsComponent } from './options.component';
 
 const routes: Routes = [
@@ -18,7 +19,13 @@ const routes: Routes = [
      },
      {
        path: 'diagram',
-       component: DiagramComponent
+       component: DiagramComponent,
+       children: [
+         {
+          path: "simulator",
+          component: SimulatorComponent
+          }
+       ]
      },
      {
        path: 'table',

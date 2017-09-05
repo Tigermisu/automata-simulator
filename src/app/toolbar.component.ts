@@ -18,14 +18,11 @@ export class ToolbarComponent implements OnInit {
     this.appStateService.registerToolbarComponent(this);
   }
 
-  activateToolbar(type: string) {
-
+  activateToolbar(type: string, enable: boolean) {
     switch(type) {
       case "finite-automata":
-        this.toolbarEnableState.finiteautomata = true;
+        this.toolbarEnableState.finiteautomata = enable;
         break;
-      default:
-        this.toolbarEnableState.finiteautomata = false;
     }
   }
 
