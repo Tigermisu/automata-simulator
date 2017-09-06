@@ -1,7 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
-import { Automata, State, Transition, Coords, AlphabetSymbol } from '../automata';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { Automaton, State, Transition, Coords, AlphabetSymbol } from '../automaton';
 import { AppStateService } from '../app-state.service';
-import { FiniteAutomata } from './finite-automata';
+import { FiniteAutomaton } from './finite-automaton';
+import { Subscription } from 'rxjs/Subscription';
 
 declare var alertify;
 
@@ -10,11 +11,13 @@ declare var alertify;
   templateUrl: './simulator.component.html',
   styleUrls: ['./simulator.component.css']
 })
-export class SimulatorComponent implements OnInit {
+export class SimulatorComponent implements OnInit, OnDestroy {
+  private projectSubscription: Subscription;
   inputWord: string = "";
   speed: number = 50;
   simulation: Simulation;
-  automata: FiniteAutomata;
+  automaton: FiniteAutomaton;  
+  
 
   get simSpeed(): number {
     return this.speed;
@@ -34,12 +37,19 @@ export class SimulatorComponent implements OnInit {
   constructor(private appStateService: AppStateService) {}
   
   ngOnInit() {
-    this.automata = this.appStateService.project as FiniteAutomata;
+    this.automaton = this.appStateService.project as FiniteAutomaton;
     alertify.logPosition("top right");
+    this.projectSubscription = this.appStateService.projectChangedStream.subscribe((newProject) => {
+      this.automaton = newProject as FiniteAutomaton;
+    });
+  }
+  
+  ngOnDestroy() {
+    this.projectSubscription.unsubscribe();
   }
 
   toggleState() {
-    let error = this.validateAutomata();
+    let error = this.validateAutomaton();
     if(error != null) {
       return this.outputError(error);
     }
@@ -73,7 +83,7 @@ export class SimulatorComponent implements OnInit {
 
   createSimulation(): boolean {
     if(this.validateWord(this.inputWord)) {
-      this.simulation = new Simulation(this.automata);
+      this.simulation = new Simulation(this.automaton);
       this.simulation.initializeSimulation(this.inputWord);
       return true;
     } else {
@@ -82,8 +92,16 @@ export class SimulatorComponent implements OnInit {
     }
   }
 
+  updateSpeed(value: number) {
+    if(!(typeof(this.simulation) == "undefined" 
+          || this.simulation == null
+          || !this.simulation.isRunning)) {
+            this.simulation.updateInterval(2000 - value * 20);          
+          }
+  }
+
   step() {
-    let error = this.validateAutomata();
+    let error = this.validateAutomaton();
     if(error != null) {
       return this.outputError(error);
     }
@@ -103,38 +121,38 @@ export class SimulatorComponent implements OnInit {
   }
 
   outputError(error: ValidationError) {
-    console.log(error);
+    
     alertify.error(error.errorMessage);
     if(error.culprit != null) {
-      this.automata.incorrectElement = error.culprit;
+      this.automaton.incorrectElement = error.culprit;
     }
     setTimeout(() => {
-      this.automata.incorrectElement = null;
+      this.automaton.incorrectElement = null;
     }, 5000);
   }
 
   reset() {
-    this.automata.activeElement = null;
+    this.automaton.activeElement = null;
     if(this.simulation != null) {
       this.simulation.stopInterval();
       this.simulation = null;
     }
   }
 
-  // Returns null if the automata is valid, else the error object
-  validateAutomata(): ValidationError {
-    let automata = this.automata, 
+  // Returns null if the automaton is valid, else the error object
+  validateAutomaton(): ValidationError {
+    let automaton = this.automaton, 
       initialStates = 0,
       finalStates = 0,
-      alphabetSymbols = automata.alphabet.symbols.length,
-      isDeterministic = automata.isDeterministic;
+      alphabetSymbols = automaton.alphabet.symbols.length,
+      isDeterministic = automaton.isDeterministic;
     
-    for(let i = 0; i < automata.states.length; i++) {
-      let state = automata.states[i];
+    for(let i = 0; i < automaton.states.length; i++) {
+      let state = automaton.states[i];
 
       if(state.type == "initial" || state.type == "ambivalent") {
         if(++initialStates > 1) {
-          return new ValidationError("An automata can only have one initial state", state);
+          return new ValidationError("An automaton can only have one initial state", state);
         }
       }
 
@@ -171,7 +189,6 @@ export class SimulatorComponent implements OnInit {
     let seenSymbols = [];
     for(let i = 0; i < conditions.length; i++) {
       if(seenSymbols.includes(conditions[i].symbol)) {
-        console.log(conditions, seenSymbols);
         return true;
       }
       seenSymbols.push(conditions[i].symbol)
@@ -180,7 +197,7 @@ export class SimulatorComponent implements OnInit {
   }
 
   validateWord(word: string) {
-    let alphabet = this.automata.alphabet.symbols;
+    let alphabet = this.automaton.alphabet.symbols;
     for(let i = 0; i < word.length; i++) {
       let contained = false;
       for(let j = 0; j < alphabet.length; j++) {
@@ -200,7 +217,7 @@ class Simulation {
   inputWord: string;
   initialState: State;
   stepInterval: any;
-  automata: FiniteAutomata;
+  automaton: FiniteAutomaton;
   traversalStack: TraversalElement[];
   currentElement: TraversalElement;
   lastDepth: number;
@@ -211,14 +228,14 @@ class Simulation {
     return this.stepInterval != null;
   }
 
-  constructor(automata: FiniteAutomata) {
-    this.automata = automata;
+  constructor(automaton: FiniteAutomaton) {
+    this.automaton = automaton;
     this.stepInterval = null;
 
-    for(let i = 0; i < automata.states.length; i++) {
-      if(automata.states[i].type == "initial" 
-          || automata.states[i].type == "ambivalent") {
-        this.initialState = automata.states[i];
+    for(let i = 0; i < automaton.states.length; i++) {
+      if(automaton.states[i].type == "initial" 
+          || automaton.states[i].type == "ambivalent") {
+        this.initialState = automaton.states[i];
         break;
       }
     }
@@ -229,14 +246,14 @@ class Simulation {
   }
 
   initializeSimulation(word: string) {
-    this.automata.activeElement = this.initialState;
+    this.automaton.activeElement = this.initialState;
     this.inputWord = word;
     this.lastDepth = 0;
     this.reachedValidity = false;
     this.traversalStack = [new TraversalState(0, "state", this.initialState)];
   
-    this.automata.selectedState = null;
-    this.automata.selectedTransition = null;
+    this.automaton.selectedState = null;
+    this.automaton.selectedTransition = null;
   }
 
   startInterval(interval: number) {
@@ -249,6 +266,13 @@ class Simulation {
   stopInterval() {
     clearInterval(this.stepInterval);
     this.stepInterval = null;
+  }
+
+  updateInterval(interval: number) {
+    clearInterval(this.stepInterval);
+    this.stepInterval = setInterval(() => {
+      this.step();
+    }, interval);
   }
 
   step() {
@@ -270,7 +294,7 @@ class Simulation {
         state = stateTraversalElement.state,
         inputSymbol = this.inputWord[stateTraversalElement.depth];
 
-      this.automata.activeElement = state;
+      this.automaton.activeElement = state;
       this.lastDepth =stateTraversalElement.depth;
       
       if(typeof(inputSymbol) == "undefined") { // We reached the end of the word
@@ -300,7 +324,7 @@ class Simulation {
         transition = transitionTraversalElement.transition,
         destinationState = transition.destination;
 
-      this.automata.activeElement = transition;
+      this.automaton.activeElement = transition;
 
       this.traversalStack.push(new TraversalState(
           transitionTraversalElement.depth + 1, "state", destinationState));

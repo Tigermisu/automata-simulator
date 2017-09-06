@@ -12,9 +12,15 @@ export class AppStateService {
     private activeProject: Project;
     private toolbarClickedSource = new Subject<ToolEvent>();
     private toolbarClicked$ = this.toolbarClickedSource.asObservable(); 
+    private projectChangedSource = new Subject<Project>();
+    private projectChanged$ = this.projectChangedSource.asObservable();
 
     get toolbarClickedStream() {
         return this.toolbarClicked$;
+    }
+
+    get projectChangedStream() {
+        return this.projectChanged$;
     }
 
     get hasActiveProject() {
@@ -23,10 +29,6 @@ export class AppStateService {
 
     get project() {
         return this.activeProject;
-    }
-
-    set project(projectInstance: Project) {
-        this.activeProject = projectInstance;
     }
 
     registerAppComponent(app: AppComponent) {
@@ -40,6 +42,11 @@ export class AppStateService {
     closeActiveProject() {
         this.activeProject = undefined;
         this.toolbarComponent.clearActionStack();
+    }
+
+    openProject(project: Project) {
+        this.activeProject = project;
+        this.projectChangedSource.next(this.activeProject);
     }
 
     requestToolbar(toolbarName: string) {

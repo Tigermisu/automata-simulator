@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { State, Transition, Coords, AlphabetSymbol } from '../automata';
+import { State, Transition, Coords, AlphabetSymbol } from '../automaton';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { AppStateService } from '../app-state.service';
-import { FiniteAutomata } from './finite-automata';
+import { FiniteAutomaton } from './finite-automaton';
 import { Subscription } from 'rxjs/Subscription';
 import { ToolEvent } from '../toolbar.component';
 
@@ -14,14 +14,15 @@ import { ToolEvent } from '../toolbar.component';
 export class DiagramComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvasRef: ElementRef;  
   private lastClickDetails: any = { isMouseDown: false };
-  private subscription: Subscription;
-  private automata: FiniteAutomata;
+  private toolbarSubscription: Subscription;
+  private projectSubscription: Subscription;
+  private automaton: FiniteAutomaton;
   draggedState: State = null;
 
   @HostListener('document:keyup', ['$event']) onKeyUp($event: KeyboardEvent) {
     let keyCode = $event.code;
 
-    console.log($event);
+    
 
     if(!($event.ctrlKey || $event.srcElement.localName == "input")) {
       switch(keyCode) {        
@@ -42,17 +43,17 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
   get showContextMenu() {
     if(typeof(this.appStateService.project) != "undefined") {
-      return (this.automata.selectedState != null 
+      return (this.automaton.selectedState != null 
                   && this.appStateService.getActiveTool() != "newFiniteTransition")
-              || this.automata.selectedTransition != null; 
+              || this.automaton.selectedTransition != null; 
     }
   }
 
   get contextMenuType() {
     if(typeof(this.appStateService.project) != "undefined") {
-      if(this.automata.selectedState != null) {
+      if(this.automaton.selectedState != null) {
         return "state";
-      } else if(this.automata.selectedTransition != null) {
+      } else if(this.automaton.selectedTransition != null) {
         return "transition";
       }
     }
@@ -63,9 +64,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
     if(typeof(this.appStateService.project) != "undefined") {
       let bottomOffset = this.canvasRef.nativeElement.offsetHeight + 45;
       if(this.contextMenuType == "state") {
-        return bottomOffset - this.automata.selectedState.layoutPosition.y;
+        return bottomOffset - this.automaton.selectedState.layoutPosition.y;
       } else if(this.contextMenuType == "transition") {
-        return bottomOffset - this.automata.selectedTransition.midPoint.y - 10;
+        return bottomOffset - this.automaton.selectedTransition.midPoint.y - 10;
       }
     }
   
@@ -74,9 +75,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
   get contextMenuLeft() {
     if(typeof(this.appStateService.project) != "undefined") {
       if(this.contextMenuType == "state") {
-        return this.automata.selectedState.layoutPosition.x + 120;
+        return this.automaton.selectedState.layoutPosition.x + 120;
       } else if(this.contextMenuType == "transition") {
-        return this.automata.selectedTransition.midPoint.x + 125;
+        return this.automaton.selectedTransition.midPoint.x + 125;
       }
     }    
   }
@@ -85,31 +86,35 @@ export class DiagramComponent implements OnInit, OnDestroy {
               private sanitizer: DomSanitizer) {}
  
   ngOnInit() {
-    this.automata = this.appStateService.project as FiniteAutomata;
-    this.appStateService.requestToolbar('finite-automata');
-    this.subscription = this.appStateService.toolbarClickedStream.subscribe(($event) => {
+    this.automaton = this.appStateService.project as FiniteAutomaton;
+    this.appStateService.requestToolbar('finite-automaton');
+    this.toolbarSubscription = this.appStateService.toolbarClickedStream.subscribe(($event) => {
       this.onToolClicked($event);
+    });
+    this.projectSubscription = this.appStateService.projectChangedStream.subscribe((newProject) => {
+      this.automaton = newProject as FiniteAutomaton;
     });
   }
 
   ngOnDestroy() {
-    this.appStateService.releaseToolbar('finite-automata');
-    this.subscription.unsubscribe();
+    this.appStateService.releaseToolbar('finite-automaton');
+    this.toolbarSubscription.unsubscribe();
+    this.projectSubscription.unsubscribe();
   }
 
   createState(position) {
-    this.automata.createState(position);
+    this.automaton.createState(position);
   }
 
   deleteSelectedItem() {
-    if(this.automata.selectedState != null) {
-      this.automata.deleteState(this.automata.selectedState);
-      this.automata.selectedState = null;        
-      this.automata.metadata.isUnsaved = true;      
-    } else if(this.automata.selectedTransition != null) {
-      this.automata.deleteTransition(this.automata.selectedTransition);
-      this.automata.selectedTransition = null;        
-      this.automata.metadata.isUnsaved = true;
+    if(this.automaton.selectedState != null) {
+      this.automaton.deleteState(this.automaton.selectedState);
+      this.automaton.selectedState = null;        
+      this.automaton.metadata.isUnsaved = true;      
+    } else if(this.automaton.selectedTransition != null) {
+      this.automaton.deleteTransition(this.automaton.selectedTransition);
+      this.automaton.selectedTransition = null;        
+      this.automaton.metadata.isUnsaved = true;
     }
   }
 
@@ -170,19 +175,18 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
   processCanvasLeftClick(clickDetails) {
     let activeTool = this.appStateService.getActiveTool();
-    console.info("Got a left click on the canvas", clickDetails);
 
-    this.automata.selectedState = null;
-    this.automata.selectedTransition = null;
+    this.automaton.selectedState = null;
+    this.automaton.selectedTransition = null;
   
     switch(activeTool) {
       case 'newFiniteState':
-        this.automata.metadata.isUnsaved = true;
+        this.automaton.metadata.isUnsaved = true;
         this.createState({x: clickDetails.x - 200, y: clickDetails.y - 88});
         break;
       default:      
-          this.automata.selectedState = null;
-          this.automata.selectedTransition = null;
+          this.automaton.selectedState = null;
+          this.automaton.selectedTransition = null;
       }
   }
 
@@ -201,7 +205,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
         this.draggedState.layoutPosition.x = $event.pageX - 200,
         this.draggedState.layoutPosition.y = $event.pageY - 88
       );
-      this.automata.metadata.isUnsaved = true;      
+      this.automaton.metadata.isUnsaved = true;      
     } else if(this.lastClickDetails.isMouseDown && $event.buttons == 2) {
       let deltaX = $event.pageX - this.lastClickDetails.x,
         deltaY = $event.pageY - this.lastClickDetails.y;
@@ -209,11 +213,11 @@ export class DiagramComponent implements OnInit, OnDestroy {
       this.lastClickDetails.x = $event.pageX;
       this.lastClickDetails.y = $event.pageY;
 
-      this.automata.states.forEach((state) => {
+      this.automaton.states.forEach((state) => {
         state.layoutPosition.x += deltaX;
         state.layoutPosition.y += deltaY;
       });
-      this.automata.metadata.isUnsaved = true;      
+      this.automaton.metadata.isUnsaved = true;      
     }
   }
 
@@ -285,8 +289,8 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
   processTransitionLeftClick(clickDetails, transition: Transition) {
     this.appStateService.deselectTool();
-    this.automata.selectedState = null;
-    this.automata.selectedTransition = transition;
+    this.automaton.selectedState = null;
+    this.automaton.selectedTransition = transition;
   }
 
   processStateLeftClick(clickDetails, state: State) {
@@ -294,41 +298,41 @@ export class DiagramComponent implements OnInit, OnDestroy {
     
     switch(activeTool) {
       case 'newFiniteTransition':
-        if(this.automata.selectedState != null) {
-          let transition = this.addTransition(this.automata.selectedState, state);
-          this.automata.selectedState = null;    
-          this.automata.selectedTransition = transition;         
-          this.automata.metadata.isUnsaved = true;          
+        if(this.automaton.selectedState != null) {
+          let transition = this.addTransition(this.automaton.selectedState, state);
+          this.automaton.selectedState = null;    
+          this.automaton.selectedTransition = transition;         
+          this.automaton.metadata.isUnsaved = true;          
         } else {
-          this.automata.selectedTransition = null;
-          this.automata.selectedState = state;
+          this.automaton.selectedTransition = null;
+          this.automaton.selectedState = state;
         }
         break;
       default:
-          this.automata.selectedTransition = null;
-          this.automata.selectedState = state;
+          this.automaton.selectedTransition = null;
+          this.automaton.selectedState = state;
       }
   }
 
   onToggleStateTypeCheckbox(checkboxType: string, event: Event) {
-    let currentType = this.automata.selectedState.type;
+    let currentType = this.automaton.selectedState.type;
     if((currentType == "initial" && checkboxType == "initial") 
         || (currentType == "final" && checkboxType == "final")) {
-      this.automata.selectedState.setType("normal");
+      this.automaton.selectedState.setType("normal");
     } else if((currentType == "initial" && checkboxType == "final")
             || (currentType == "final" && checkboxType == "initial")) {
-      this.automata.selectedState.setType("ambivalent");
+      this.automaton.selectedState.setType("ambivalent");
     } else if((currentType == "normal" && checkboxType == "initial")
             || (currentType == "ambivalent" && checkboxType == "final")) {
-      this.automata.selectedState.setType("initial");
+      this.automaton.selectedState.setType("initial");
     } else {
-      this.automata.selectedState.setType("final");
+      this.automaton.selectedState.setType("final");
     }
-    this.automata.metadata.isUnsaved = true;    
+    this.automaton.metadata.isUnsaved = true;    
   }
 
   addTransition(from: State, to: State): Transition {        
-    this.automata.metadata.isUnsaved = true;
+    this.automaton.metadata.isUnsaved = true;
     return from.addTransition(to);
   }
 
@@ -337,8 +341,8 @@ export class DiagramComponent implements OnInit, OnDestroy {
   }
 
   removeConditionFromTransition(condition: AlphabetSymbol) {        
-    this.automata.metadata.isUnsaved = true;
-    this.automata.selectedTransition.removeCondition(condition);
+    this.automaton.metadata.isUnsaved = true;
+    this.automaton.selectedTransition.removeCondition(condition);
   }
 
   addConditionToTransition(conditionInput: string) {
@@ -347,9 +351,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
-          this.automata.metadata.isUnsaved = true;          
-          this.automata.addConditionToTransition(
-                this.automata.selectedTransition, symbol);
+          this.automaton.metadata.isUnsaved = true;          
+          this.automaton.addConditionToTransition(
+                this.automaton.selectedTransition, symbol);
         }
       });
     }

@@ -8,7 +8,7 @@ import { AppStateService } from './app-state.service';
 export class ToolbarComponent implements OnInit {
   private selectedTool: string;
   private toolbarEnableState = {
-    "finiteautomata": false
+    "finiteautomaton": false
   };
 
   @Output() toolclicked: EventEmitter<ToolEvent> = new EventEmitter();
@@ -22,8 +22,8 @@ export class ToolbarComponent implements OnInit {
 
   activateToolbar(type: string, enable: boolean) {
     switch(type) {
-      case "finite-automata":
-        this.toolbarEnableState.finiteautomata = enable;
+      case "finite-automaton":
+        this.toolbarEnableState.finiteautomaton = enable;
         break;
     }
   }

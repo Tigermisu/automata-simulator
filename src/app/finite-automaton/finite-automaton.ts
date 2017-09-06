@@ -1,10 +1,10 @@
-import { Automata } from '../automata';
+import { Automaton } from '../automaton';
 
-export class FiniteAutomata extends Automata {
+export class FiniteAutomaton extends Automaton {
     isDeterministic: boolean;
 
     constructor(isDeterministic: boolean) {
-        super("finite-automata");
+        super("finite-automaton");
         this.isDeterministic = isDeterministic;
     }
 }

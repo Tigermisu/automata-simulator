@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
-import { FiniteModule } from './finite-automata/finite.module';
+import { FiniteModule } from './finite-automaton/finite.module';
 
 import { AppStateService } from './app-state.service';
 

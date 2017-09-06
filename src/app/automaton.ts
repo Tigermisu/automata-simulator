@@ -1,6 +1,6 @@
 import { Project } from './project';
 
-export class Automata extends Project {
+export class Automaton extends Project {
     stateAutoIncrement: number;
     states: State[];
     selectedState: State;

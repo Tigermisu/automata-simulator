@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { AppStateService } from '../app-state.service';
-import { FiniteAutomata } from './finite-automata';
+import { FiniteAutomaton } from './finite-automaton';
 import { Subscription } from 'rxjs/Subscription';
 import { ToolEvent } from '../toolbar.component';
+import { AlphabetSymbol } from '../automaton';
 import { Router } from '@angular/router';
 import { Metadata } from '../project';
 
@@ -13,7 +14,7 @@ declare var alertify;
 })
 export class FiniteComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
-  automata: FiniteAutomata;
+  automaton: FiniteAutomaton;
 
   constructor(private appStateService: AppStateService,
               private router: Router) {}
@@ -44,8 +45,8 @@ export class FiniteComponent implements OnInit, OnDestroy {
     } else {
       switch(keyCode) {
         case "Escape":
-          this.automata.selectedState = null;
-          this.automata.selectedTransition = null;
+          this.automaton.selectedState = null;
+          this.automaton.selectedTransition = null;
           break;
       }
       
@@ -55,8 +56,8 @@ export class FiniteComponent implements OnInit, OnDestroy {
   
   ngOnInit() {
     if(this.appStateService.hasActiveProject) {
-      this.automata = this.appStateService.project as FiniteAutomata;
-      if(this.automata.type != "finite-automata") { // This should never happen
+      this.automaton = this.appStateService.project as FiniteAutomaton;
+      if(this.automaton.type != "finite-automaton") { // This should never happen
         this.router.navigateByUrl("/home", { replaceUrl: true });
       }
     } else {
@@ -66,11 +67,22 @@ export class FiniteComponent implements OnInit, OnDestroy {
     this.subscription = this.appStateService.toolbarClickedStream.subscribe(($event) => {
       this.onToolClicked($event);
     });
+
+    window.addEventListener("beforeunload", ($e) => {
+      if(this.automaton.metadata.isUnsaved) {
+        let msg = "You have unsaved changes. Are you sure you want to exit?";
+        // Most browsers don't accept a custom message nowadays, but it's here just in case.
+        $e.returnValue = msg; 
+        return msg;
+      }
+    });
   }
 
   ngOnDestroy() {
     this.appStateService.closeActiveProject();
     this.subscription.unsubscribe();
+
+    window.removeEventListener("beforeUnload");
   }
 
   onToolClicked($event: ToolEvent) {
@@ -116,19 +128,19 @@ export class FiniteComponent implements OnInit, OnDestroy {
     let reader = new FileReader();
     reader.onload = ($event: any) => {
       let rawAutomaton = JSON.parse($event.target.result)
-      this.automata = this.parseAutomatonObject(rawAutomaton)
-      this.appStateService.project = this.automata;
+      this.automaton = this.parseAutomatonObject(rawAutomaton)
+      this.appStateService.openProject(this.automaton);
       this.router.navigateByUrl("/finite", { replaceUrl: true});
     }
     reader.readAsText(file);
   }
 
-  parseAutomatonObject(rawAutomaton: FiniteAutomata): FiniteAutomata {
-    let automaton = new FiniteAutomata(rawAutomaton.isDeterministic);
+  parseAutomatonObject(rawAutomaton: FiniteAutomaton): FiniteAutomaton {
+    let automaton = new FiniteAutomaton(rawAutomaton.isDeterministic);
     automaton.metadata = rawAutomaton.metadata;
 
     rawAutomaton.alphabet.symbols.forEach((symbol) => {
-      automaton.alphabet.addSymbol(symbol);
+      automaton.alphabet.addSymbol(new AlphabetSymbol(symbol.symbol));
     })
 
     rawAutomaton.states.forEach((rawState) => {
@@ -161,18 +173,18 @@ export class FiniteComponent implements OnInit, OnDestroy {
 
   newFSM() {
     this.protectAgainstUnsavedChanges(() => {      
-      this.automata = new FiniteAutomata(true);
-      this.appStateService.project = this.automata;
-      this.automata.metadata = new Metadata("New Finite State Automaton");
+      this.automaton = new FiniteAutomaton(true);
+      this.appStateService.openProject(this.automaton);
+      this.automaton.metadata = new Metadata("New Finite State Automaton");
       this.router.navigateByUrl("/finite/options", { replaceUrl: true }); 
     });
   }
 
   saveFSM() {
-    this.automata.metadata.isUnsaved = false;
+    this.automaton.metadata.isUnsaved = false;
 
     let element = document.createElement('a'),
-      jsonAutomaton = JSON.stringify(this.automata, (key, value) => {
+      jsonAutomaton = JSON.stringify(this.automaton, (key, value) => {
       if(key == 'origin' || key == 'destination') {
         return value.id;
       } else if(["selectedState", "selectedTransition", "activeElement"].includes(key)) {
@@ -185,7 +197,7 @@ export class FiniteComponent implements OnInit, OnDestroy {
     let blob = new Blob([jsonAutomaton], { type: "text/plain"});
 
     element.setAttribute('href', window.URL.createObjectURL(blob));
-    element.setAttribute('download', this.automata.metadata.title + ".fsm.json");  
+    element.setAttribute('download', this.automaton.metadata.title + ".fsm.json");  
     element.style.display = 'none';
     document.body.appendChild(element);  
     element.click();  
@@ -193,7 +205,7 @@ export class FiniteComponent implements OnInit, OnDestroy {
   }
 
   protectAgainstUnsavedChanges(acknowledgeFunction: Function) {
-    if(typeof this.automata !== "undefined" && this.automata.metadata.isUnsaved) {
+    if(typeof this.automaton !== "undefined" && this.automaton.metadata.isUnsaved) {
       let message = "Warning: You have unsaved changes in your automaton. If you continue all changes will be lost.";
       alertify.okBtn("Continue without saving").confirm(message, () => {
           acknowledgeFunction();

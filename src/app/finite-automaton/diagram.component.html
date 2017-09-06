@@ -4,11 +4,11 @@
   (contextmenu)="preventContextMenu($event)"
   (mousemove)="onCanvasMouseMove($event)"
   >
-  <div class="state" *ngFor="let state of automata.states"
+  <div class="state" *ngFor="let state of automaton.states"
   [style.transform]="state.transformPosition"
-  [class.active]="automata.activeElement == state"
-  [class.incorrect]="automata.incorrectElement == state"
-  [class.selected]="automata.selectedState == state"
+  [class.active]="automaton.activeElement == state"
+  [class.incorrect]="automaton.incorrectElement == state"
+  [class.selected]="automaton.selectedState == state"
   [class.initial]="state.type == 'initial' || state.type == 'ambivalent'"
   [class.final]="state.type == 'final' || state.type == 'ambivalent'"
   (mouseup)="onStateMouseUp($event, state)"
@@ -19,16 +19,16 @@
     [style.transform]="sanitizeStyle(transition.transformPosition)"
     [style.width.px]="transition.width"
     [class.self]="transition.origin == transition.destination"
-    [class.selected]="automata.selectedTransition == transition"
+    [class.selected]="automaton.selectedTransition == transition"
     [class.rightArrow]="transition.hasRightArrow"
-    [class.active]="automata.activeElement == transition"
+    [class.active]="automaton.activeElement == transition"
     [class.leftArrow]="!transition.hasRightArrow"
     [class.duplicateLayout]="transition.shouldDuplicateLayout != 0"
     (mousedown)="onTransitionMouseDown($event, transition)"
     (mouseup)="onTransitionMouseUp($event, transition)">
       <div class="conditions">
         <span class="condition" *ngIf="transition.conditions.length > 0;else kleenClosure">
-          <span *ngIf="transition.conditions.length < automata.alphabet.symbols.length;else sigmaSpan">
+          <span *ngIf="transition.conditions.length < automaton.alphabet.symbols.length;else sigmaSpan">
               {{ transition.conditionsString }}
           </span>
           <ng-template #sigmaSpan>
@@ -50,31 +50,31 @@
   [style.left.px]="contextMenuLeft">
   <div *ngIf="contextMenuType == 'state'">
     <label for="stateName">Name</label>
-    <input type="text" [(ngModel)]="automata.selectedState.name" (change)="automata.metadata.isUnsaved = true;">
+    <input type="text" [(ngModel)]="automaton.selectedState.name" (change)="automaton.metadata.isUnsaved = true;">
 
     <label for="properties">Properties</label>
     <div class="checkbox-wrapper">
       <input type="checkbox" name="properties" value="isInitial" id="isInitial"
-      [checked]="automata.selectedState.type == 'initial'
-                || automata.selectedState.type == 'ambivalent'"
+      [checked]="automaton.selectedState.type == 'initial'
+                || automaton.selectedState.type == 'ambivalent'"
       (change)="onToggleStateTypeCheckbox('initial', $event)"> <label for="isInitial">Initial State</label>
       <input type="checkbox" name="properties" value="isFinal" id="isFinal"
-      [checked]="automata.selectedState.type == 'final'
-                || automata.selectedState.type == 'ambivalent'"
+      [checked]="automaton.selectedState.type == 'final'
+                || automaton.selectedState.type == 'ambivalent'"
       (change)="onToggleStateTypeCheckbox('final', $event)"> <label for="isFinal">Final State</label>
     </div>
     
   </div>
   <div *ngIf="contextMenuType == 'transition'">
     <div class="alphabet-symbols">
-      <div class="symbol-entry" *ngFor="let condition of automata.selectedTransition.conditions">
+      <div class="symbol-entry" *ngFor="let condition of automaton.selectedTransition.conditions">
         {{ condition }}
         <span class="remove" (click)="removeConditionFromTransition(condition)">x</span>
       </div>
-      <span *ngIf="automata.selectedTransition.conditions.length == 0">
+      <span *ngIf="automaton.selectedTransition.conditions.length == 0">
         An empty transition defaults to &#x3B5;
       </span>
-      <span class="formal-string">{{ automata.alphabet.formalString }}</span>
+      <span class="formal-string">{{ automaton.alphabet.formalString }}</span>
     </div>
     <div class="plus-adder">
       <input type="text" id="alphabet" #conditionInput 

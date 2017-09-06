@@ -8,7 +8,7 @@
     <div id="redoTool" class="tool redo" (click)="onToolClick('redo', false)"></div>
 </div>
 <div class="contextual-tools">
-    <div id="finiteTools" class="contextual-wrapper" *ngIf="toolbarEnableState.finiteautomata">
+    <div id="finiteTools" class="contextual-wrapper" *ngIf="toolbarEnableState.finiteautomaton">
         <div id="newFiniteState" class="tool newFiniteState" [class.active]="selectedTool == 'newFiniteState'" 
             (click)="onToolClick('newFiniteState', true)"></div>
         <div id="newFiniteTransition" class="tool newFiniteTransition" [class.active]="selectedTool == 'newFiniteTransition'"

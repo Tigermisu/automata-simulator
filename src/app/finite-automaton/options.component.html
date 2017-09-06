@@ -1,31 +1,32 @@
 <div class="text-wrapper">
   <h2>Options</h2>
-  <label for="projectTitle">Automata Title</label>
-  <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title">
+  <label for="projectTitle">Automaton Title</label>
+  <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title"
+    (change)="this.automaton.metadata.isUnsaved = true;">
 
-  <label for="projectType">Automata Type</label>
+  <label for="projectType">Automaton Type</label>
   <div class="radio-wrapper">
-    <input type="radio" name="automataType" value="deterministic" id="deterministic"
-    [checked]="automata.isDeterministic" 
+    <input type="radio" name="automatonType" value="deterministic" id="deterministic"
+    [checked]="automaton.isDeterministic" 
     (change)="setFiniteAsDeterministic(true)"> <label for="deterministic">Deterministic</label>
-    <input type="radio" name="automataType" value="nondeterministic" id="nondeterministic"
-    [checked]="!automata.isDeterministic" 
+    <input type="radio" name="automatonType" value="nondeterministic" id="nondeterministic"
+    [checked]="!automaton.isDeterministic" 
     (change)="setFiniteAsDeterministic(false)"> <label for="nondeterministic">Non-Deterministic</label>
   </div>
 
   <label for="alphabet">Alphabet</label>
   <div class="alphabet-symbols">
-    <div class="symbol-entry" *ngFor="let symbol of automata.alphabet.symbols">
+    <div class="symbol-entry" *ngFor="let symbol of automaton.alphabet.symbols">
       {{ symbol }}
       <span class="remove" (click)="removeSymbolFromAlphabet(symbol)">x</span>
     </div>
-    <span *ngIf="automata.alphabet.symbols.length == 0">
+    <span *ngIf="automaton.alphabet.symbols.length == 0">
       The current alphabet contains no symbols.
     </span>
 
-    <span *ngIf="automata.alphabet.symbols.length > 0">
+    <span *ngIf="automaton.alphabet.symbols.length > 0">
      <br>
-      {{ automata.alphabet.formalString }}
+      {{ automaton.alphabet.formalString }}
     </span>
   </div>
   <div class="plus-adder">
