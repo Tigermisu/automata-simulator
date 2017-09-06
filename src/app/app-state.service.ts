@@ -39,6 +39,7 @@ export class AppStateService {
 
     closeActiveProject() {
         this.activeProject = undefined;
+        this.toolbarComponent.clearActionStack();
     }
 
     requestToolbar(toolbarName: string) {
@@ -53,12 +54,24 @@ export class AppStateService {
         return this.toolbarComponent.activeTool;
     }
 
+    selectTool(toolName: string) {
+        this.toolbarComponent.selectTool(toolName);
+    }
+
     deselectTool() {
         this.toolbarComponent.deselectTool();
     }
 
     announceToolbarClick(toolEvent: ToolEvent) {
         this.toolbarClickedSource.next(toolEvent);
-      }
+    }
+
+    undoAction() {
+        this.toolbarComponent.undoAction();
+    }
+
+    redoAction() {
+        this.toolbarComponent.redoAction();
+    }
 
 }

@@ -1,7 +1,7 @@
 import { Project } from './project';
 
 export class Automata extends Project {
-    private stateAutoIncrement: number;
+    stateAutoIncrement: number;
     states: State[];
     selectedState: State;
     selectedTransition: Transition;
@@ -16,13 +16,15 @@ export class Automata extends Project {
         this.stateAutoIncrement = 0;
     }
 
-    createState(position: Coords) {
+    createState(position: Coords): State {
         let stateNumber = this.stateAutoIncrement++,
-        state = new State("q" + stateNumber, "normal", new Coords(position.x, position.y));
+        state = new State(stateNumber, "q" + stateNumber, "normal", new Coords(position.x, position.y));
         
         if(stateNumber == 0) state.type = "initial";
   
         this.states.push(state);
+
+        return state;
     }
 
     deleteState(state: State) {
@@ -68,12 +70,14 @@ export class Automata extends Project {
 }
 
 export class State {
+    id: number;
     name: string;
     type: string;
     transitions: Transition[];
     layoutPosition: Coords;    
 
-    constructor(name: string, type: string, position: Coords) {
+    constructor(id: number, name: string, type: string, position: Coords) {
+        this.id = id;
         this.name = name;
         this.type = type;
         this.layoutPosition = position;

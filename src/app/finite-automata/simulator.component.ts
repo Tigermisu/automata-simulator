@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
-import { AppStateService } from '../app-state.service';
+import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
 import { Automata, State, Transition, Coords, AlphabetSymbol } from '../automata';
+import { AppStateService } from '../app-state.service';
 import { FiniteAutomata } from './finite-automata';
 
 declare var alertify;
@@ -10,7 +10,7 @@ declare var alertify;
   templateUrl: './simulator.component.html',
   styleUrls: ['./simulator.component.css']
 })
-export class SimulatorComponent implements OnInit, OnDestroy {
+export class SimulatorComponent implements OnInit {
   inputWord: string = "";
   speed: number = 50;
   simulation: Simulation;
@@ -37,10 +37,6 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     this.automata = this.appStateService.project as FiniteAutomata;
     alertify.logPosition("top right");
   }
-
-  ngOnDestroy() {
-
-  } 
 
   toggleState() {
     let error = this.validateAutomata();
@@ -98,6 +94,9 @@ export class SimulatorComponent implements OnInit, OnDestroy {
         this.simulation.step();
       }
     } else {
+      if(this.simulation.isRunning) {
+        this.stopSimulation();
+      }
       this.simulation.step();
     }
 
@@ -235,6 +234,9 @@ class Simulation {
     this.lastDepth = 0;
     this.reachedValidity = false;
     this.traversalStack = [new TraversalState(0, "state", this.initialState)];
+  
+    this.automata.selectedState = null;
+    this.automata.selectedTransition = null;
   }
 
   startInterval(interval: number) {

@@ -51,6 +51,18 @@ export class ToolbarComponent implements OnInit {
       this.deselectTool();
     }
   }
+
+  undoAction() {
+    console.log("undo");
+  }
+
+  redoAction() {
+    console.log("redo");
+  }
+
+  clearActionStack() {
+    console.log("clearing stack")
+  }
 }
 
 export class ToolEvent {

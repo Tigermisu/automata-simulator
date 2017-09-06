@@ -3,7 +3,6 @@
   (mouseup)="onCanvasMouseUp($event)"
   (contextmenu)="preventContextMenu($event)"
   (mousemove)="onCanvasMouseMove($event)"
-  (keyup)="onCanvasKeyUp($event)"
   >
   <div class="state" *ngFor="let state of automata.states"
   [style.transform]="state.transformPosition"
@@ -51,7 +50,7 @@
   [style.left.px]="contextMenuLeft">
   <div *ngIf="contextMenuType == 'state'">
     <label for="stateName">Name</label>
-    <input type="text" [(ngModel)]="this.automata.selectedState.name">
+    <input type="text" [(ngModel)]="automata.selectedState.name" (change)="automata.metadata.isUnsaved = true;">
 
     <label for="properties">Properties</label>
     <div class="checkbox-wrapper">

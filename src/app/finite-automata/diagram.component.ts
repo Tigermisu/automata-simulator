@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { State, Transition, Coords, AlphabetSymbol } from '../automata';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { AppStateService } from '../app-state.service';
@@ -12,11 +12,33 @@ import { ToolEvent } from '../toolbar.component';
   styleUrls: ['./diagram.component.css']
 })
 export class DiagramComponent implements OnInit, OnDestroy {
-  @ViewChild('canvas') canvasRef: ElementRef;
+  @ViewChild('canvas') canvasRef: ElementRef;  
   private lastClickDetails: any = { isMouseDown: false };
   private subscription: Subscription;
   private automata: FiniteAutomata;
   draggedState: State = null;
+
+  @HostListener('document:keyup', ['$event']) onKeyUp($event: KeyboardEvent) {
+    let keyCode = $event.code;
+
+    console.log($event);
+
+    if(!($event.ctrlKey || $event.srcElement.localName == "input")) {
+      switch(keyCode) {        
+        case "Delete":        
+          this.deleteSelectedItem();
+          break;
+        case "KeyT":
+          this.appStateService.selectTool("newFiniteTransition");
+          break;
+        case "KeyS":
+          this.appStateService.selectTool("newFiniteState");
+          break;
+      }
+    }
+
+    
+  };
 
   get showContextMenu() {
     if(typeof(this.appStateService.project) != "undefined") {
@@ -82,10 +104,12 @@ export class DiagramComponent implements OnInit, OnDestroy {
   deleteSelectedItem() {
     if(this.automata.selectedState != null) {
       this.automata.deleteState(this.automata.selectedState);
-      this.automata.selectedState = null;
+      this.automata.selectedState = null;        
+      this.automata.metadata.isUnsaved = true;      
     } else if(this.automata.selectedTransition != null) {
       this.automata.deleteTransition(this.automata.selectedTransition);
-      this.automata.selectedTransition = null;
+      this.automata.selectedTransition = null;        
+      this.automata.metadata.isUnsaved = true;
     }
   }
 
@@ -95,11 +119,6 @@ export class DiagramComponent implements OnInit, OnDestroy {
         this.deleteSelectedItem();
         break;
     }
-    console.info("got toolevent:", $event);
-  }
-
-  onCanvasKeyUp($event) {
-    console.log($event);
   }
 
   onCanvasMouseDown($event: MouseEvent) {
@@ -154,9 +173,11 @@ export class DiagramComponent implements OnInit, OnDestroy {
     console.info("Got a left click on the canvas", clickDetails);
 
     this.automata.selectedState = null;
+    this.automata.selectedTransition = null;
   
     switch(activeTool) {
       case 'newFiniteState':
+        this.automata.metadata.isUnsaved = true;
         this.createState({x: clickDetails.x - 200, y: clickDetails.y - 88});
         break;
       default:      
@@ -170,7 +191,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
         && this.lastClickDetails.target == $event.target
         && (this.lastClickDetails.x != $event.pageX 
             || this.lastClickDetails.y != $event.pageY)) {
-      this.draggedState = state;
+      this.draggedState = state;    
     }
   }
 
@@ -180,6 +201,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
         this.draggedState.layoutPosition.x = $event.pageX - 200,
         this.draggedState.layoutPosition.y = $event.pageY - 88
       );
+      this.automata.metadata.isUnsaved = true;      
     } else if(this.lastClickDetails.isMouseDown && $event.buttons == 2) {
       let deltaX = $event.pageX - this.lastClickDetails.x,
         deltaY = $event.pageY - this.lastClickDetails.y;
@@ -191,11 +213,11 @@ export class DiagramComponent implements OnInit, OnDestroy {
         state.layoutPosition.x += deltaX;
         state.layoutPosition.y += deltaY;
       });
+      this.automata.metadata.isUnsaved = true;      
     }
   }
 
   onTransitionMouseDown($event, transition: Transition) {
-    console.info("ts mouse down");
     $event.stopPropagation();
     this.lastClickDetails = {
       x: $event.pageX,
@@ -230,14 +252,8 @@ export class DiagramComponent implements OnInit, OnDestroy {
       new Coords(this.lastClickDetails.x, this.lastClickDetails.y)
     );
 
-      if(distance < 64) {
-
-        if(clickDetails.button == 0) {
-          this.processStateLeftClick(clickDetails, state);
-          console.info("Got left click on state", $event);
-        } else {
-          this.processStateRightClick(clickDetails, state);
-        }
+      if(distance < 64) {       
+        this.processStateLeftClick(clickDetails, state);  
       }
     }
   }
@@ -264,12 +280,12 @@ export class DiagramComponent implements OnInit, OnDestroy {
 
     if(distance < 64) {
       this.processTransitionLeftClick(clickDetails, transition);
-      console.info("Got left click on transition", $event);
     }
   }
 
   processTransitionLeftClick(clickDetails, transition: Transition) {
     this.appStateService.deselectTool();
+    this.automata.selectedState = null;
     this.automata.selectedTransition = transition;
   }
 
@@ -281,7 +297,8 @@ export class DiagramComponent implements OnInit, OnDestroy {
         if(this.automata.selectedState != null) {
           let transition = this.addTransition(this.automata.selectedState, state);
           this.automata.selectedState = null;    
-          this.automata.selectedTransition = transition; 
+          this.automata.selectedTransition = transition;         
+          this.automata.metadata.isUnsaved = true;          
         } else {
           this.automata.selectedTransition = null;
           this.automata.selectedState = state;
@@ -291,10 +308,6 @@ export class DiagramComponent implements OnInit, OnDestroy {
           this.automata.selectedTransition = null;
           this.automata.selectedState = state;
       }
-  }
-
-  processStateRightClick(clickDetails, state: State) {
-    
   }
 
   onToggleStateTypeCheckbox(checkboxType: string, event: Event) {
@@ -311,9 +324,11 @@ export class DiagramComponent implements OnInit, OnDestroy {
     } else {
       this.automata.selectedState.setType("final");
     }
+    this.automata.metadata.isUnsaved = true;    
   }
 
-  addTransition(from: State, to: State): Transition {
+  addTransition(from: State, to: State): Transition {        
+    this.automata.metadata.isUnsaved = true;
     return from.addTransition(to);
   }
 
@@ -321,7 +336,8 @@ export class DiagramComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustStyle(unsafeStyle);
   }
 
-  removeConditionFromTransition(condition: AlphabetSymbol) {
+  removeConditionFromTransition(condition: AlphabetSymbol) {        
+    this.automata.metadata.isUnsaved = true;
     this.automata.selectedTransition.removeCondition(condition);
   }
 
@@ -331,6 +347,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
+          this.automata.metadata.isUnsaved = true;          
           this.automata.addConditionToTransition(
                 this.automata.selectedTransition, symbol);
         }
