@@ -8,7 +8,7 @@ import { FiniteAutomata } from './finite-automata';
   templateUrl: './options.component.html'
 })
 export class OptionsComponent implements OnInit {
-  private editorSymbol: string;
+  //private editorSymbol: string;
   private automata: FiniteAutomata;
 
   constructor(private appStateService: AppStateService) {}
@@ -25,9 +25,9 @@ export class OptionsComponent implements OnInit {
     this.automata.removeSymbol(symbolToRemove);
   }
 
-  addSymbolToAlphabet() {      
-    if(this.editorSymbol.trim() != '') {// Prevent empty symbols
-      let symbolArray = this.editorSymbol.trim().split(',');
+  addSymbolToAlphabet(editorSymbol: string) {      
+    if(editorSymbol.trim() != '') {// Prevent empty symbols
+      let symbolArray = editorSymbol.trim().split(',');
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
@@ -35,6 +35,5 @@ export class OptionsComponent implements OnInit {
         }
       });
     }
-    this.editorSymbol = "";
   }  
 }

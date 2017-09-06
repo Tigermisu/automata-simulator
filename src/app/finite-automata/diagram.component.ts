@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild} from '@angular/core';
-import { AppStateService } from '../app-state.service';
 import { State, Transition, Coords, AlphabetSymbol } from '../automata';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { AppStateService } from '../app-state.service';
 import { FiniteAutomata } from './finite-automata';
+import { Subscription } from 'rxjs/Subscription';
+import { ToolEvent } from '../toolbar.component';
 
 
 @Component({
@@ -12,9 +14,9 @@ import { FiniteAutomata } from './finite-automata';
 export class DiagramComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvasRef: ElementRef;
   private lastClickDetails: any = { isMouseDown: false };
+  private subscription: Subscription;
   private automata: FiniteAutomata;
   draggedState: State = null;
-  conditionInput: string;
 
   get showContextMenu() {
     if(typeof(this.appStateService.project) != "undefined") {
@@ -63,15 +65,42 @@ export class DiagramComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.automata = this.appStateService.project as FiniteAutomata;
     this.appStateService.requestToolbar('finite-automata');
+    this.subscription = this.appStateService.toolbarClickedStream.subscribe(($event) => {
+      this.onToolClicked($event);
+    });
   }
 
   ngOnDestroy() {
     this.appStateService.releaseToolbar('finite-automata');
+    this.subscription.unsubscribe();
   }
 
   createState(position) {
-      this.automata.createState(position);
+    this.automata.createState(position);
+  }
+
+  deleteSelectedItem() {
+    if(this.automata.selectedState != null) {
+      this.automata.deleteState(this.automata.selectedState);
+      this.automata.selectedState = null;
+    } else if(this.automata.selectedTransition != null) {
+      this.automata.deleteTransition(this.automata.selectedTransition);
+      this.automata.selectedTransition = null;
     }
+  }
+
+  onToolClicked($event: ToolEvent) {
+    switch($event.target) {
+      case "delete":
+        this.deleteSelectedItem();
+        break;
+    }
+    console.info("got toolevent:", $event);
+  }
+
+  onCanvasKeyUp($event) {
+    console.log($event);
+  }
 
   onCanvasMouseDown($event: MouseEvent) {
     this.lastClickDetails = {
@@ -252,7 +281,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
         if(this.automata.selectedState != null) {
           let transition = this.addTransition(this.automata.selectedState, state);
           this.automata.selectedState = null;    
-          this.automata.selectedTransition = transition;      
+          this.automata.selectedTransition = transition; 
         } else {
           this.automata.selectedTransition = null;
           this.automata.selectedState = state;
@@ -296,9 +325,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
     this.automata.selectedTransition.removeCondition(condition);
   }
 
-  addConditionToTransition() {
-    if(this.conditionInput.trim() != '') { // Prevent empty symbols
-      let symbolArray = this.conditionInput.trim().split(',');
+  addConditionToTransition(conditionInput: string) {
+    if(conditionInput.trim() != '') { // Prevent empty symbols
+      let symbolArray = conditionInput.trim().split(',');
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
         if(symbol.symbol != "") {
@@ -307,7 +336,6 @@ export class DiagramComponent implements OnInit, OnDestroy {
         }
       });
     }
-    this.conditionInput = "";
   }
 
 }

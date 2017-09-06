@@ -1,8 +1,9 @@
-<div class="canvas-wrapper" #canvas
+<div class="canvas-wrapper" (toolclicked)="onToolClicked($event)" #canvas
   (mousedown)="onCanvasMouseDown($event)"
   (mouseup)="onCanvasMouseUp($event)"
   (contextmenu)="preventContextMenu($event)"
   (mousemove)="onCanvasMouseMove($event)"
+  (keyup)="onCanvasKeyUp($event)"
   >
   <div class="state" *ngFor="let state of automata.states"
   [style.transform]="state.transformPosition"
@@ -77,8 +78,10 @@
       <span class="formal-string">{{ automata.alphabet.formalString }}</span>
     </div>
     <div class="plus-adder">
-      <input type="text" id="alphabet" [(ngModel)]="conditionInput" (keyup.enter)="addConditionToTransition()">
-      <button (click)="addConditionToTransition()">+</button>
+      <input type="text" id="alphabet" #conditionInput 
+          (keyup.enter)="addConditionToTransition(conditionInput.value); conditionInput.value = ''"
+          (blur)="addConditionToTransition(conditionInput.value); conditionInput.value = ''">
+      <button (click)="addConditionToTransition(conditionInput.value); conditionInput.value = ''">+</button>
     </div>
   </div>
 </div>

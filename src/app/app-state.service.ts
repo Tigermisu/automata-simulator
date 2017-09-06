@@ -1,23 +1,20 @@
 import { Injectable } from '@angular/core';
-import { PlatformLocation } from '@angular/common';
 import { Project, Metadata } from './project';
+import { Subject } from 'rxjs/Subject';
 
 import { AppComponent } from './app.component';
-import { ToolbarComponent } from './toolbar.component';
+import { ToolbarComponent, ToolEvent } from './toolbar.component';
 
 @Injectable()
 export class AppStateService {
     private appComponent: AppComponent;
     private toolbarComponent: ToolbarComponent;
     private activeProject: Project;
+    private toolbarClickedSource = new Subject<ToolEvent>();
+    private toolbarClicked$ = this.toolbarClickedSource.asObservable(); 
 
-    constructor(private location: PlatformLocation) {
-        this.location.onPopState(() => {
-            let location = window.location.href;
-            if(location.split("/").pop() == "home") {
-                this.resetState();
-            }
-         }); 
+    get toolbarClickedStream() {
+        return this.toolbarClicked$;
     }
 
     get hasActiveProject() {
@@ -40,7 +37,7 @@ export class AppStateService {
         this.toolbarComponent = toolbar;
     }
 
-    resetState() {
+    closeActiveProject() {
         this.activeProject = undefined;
     }
 
@@ -53,11 +50,15 @@ export class AppStateService {
     }
 
     getActiveTool() {
-        return this.toolbarComponent.getSelectedTool();
+        return this.toolbarComponent.activeTool;
     }
 
     deselectTool() {
         this.toolbarComponent.deselectTool();
     }
+
+    announceToolbarClick(toolEvent: ToolEvent) {
+        this.toolbarClickedSource.next(toolEvent);
+      }
 
 }

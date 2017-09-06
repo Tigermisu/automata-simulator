@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppStateService } from '../app-state.service';
 import { FiniteAutomata } from './finite-automata';
@@ -7,7 +7,7 @@ import { Metadata } from '../project';
 @Component({
   templateUrl: './finite.component.html'
 })
-export class FiniteComponent implements OnInit {
+export class FiniteComponent implements OnInit, OnDestroy {
   constructor(private appStateService: AppStateService,
               private router: Router) {}
 
@@ -25,7 +25,9 @@ export class FiniteComponent implements OnInit {
       this.automata.metadata = new Metadata("New Project");
       this.router.navigateByUrl("/finite/options", { replaceUrl: true });      
     }
+  }
 
-    console.log(this.automata, this.appStateService.project, this.automata == this.appStateService.project);
+  ngOnDestroy() {
+    this.appStateService.closeActiveProject();
   }
 }

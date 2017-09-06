@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { AppStateService } from './app-state.service';
 
 @Component({
@@ -10,6 +10,8 @@ export class ToolbarComponent implements OnInit {
   private toolbarEnableState = {
     "finiteautomata": false
   };
+
+  @Output() toolclicked: EventEmitter<ToolEvent> = new EventEmitter();
 
   constructor(private appStateService: AppStateService) {}
   
@@ -26,41 +28,39 @@ export class ToolbarComponent implements OnInit {
     }
   }
 
-  getSelectedTool() {
+  get activeTool(): string {
     return this.selectedTool;
-  }
-
-  deleteSelection() {
-    /*
-    if(this.appStateService.project.selectedState != null) {
-      this.appStateService.project.deleteState(
-              this.appStateService.project.selectedState);
-      this.appStateService.project.selectedState = null;
-    } else if(this.appStateService.project.selectedTransition != null) {
-      this.appStateService.project.deleteTransition(
-              this.appStateService.project.selectedTransition);
-      this.appStateService.project.selectedTransition = null;
-    }
-    */
-  }
-
-  saveAutomata() {
-    console.log(JSON.stringify(this.appStateService.project));
   }
 
   deselectTool() {
     this.selectedTool = null;
   }
 
+  onToolClick(toolName: string, isToggleable: boolean) {
+    if(isToggleable) {
+      this.selectTool(toolName);
+    }
+    this.toolclicked.emit(new ToolEvent(toolName, isToggleable, this.selectedTool == toolName));
+    this.appStateService.announceToolbarClick(new ToolEvent(toolName, isToggleable, this.selectedTool == toolName));
+  }
+
   selectTool(tool: string) {
     if(this.selectedTool != tool) {
       this.selectedTool = tool;
     } else {
-      this.selectedTool = null;
-      /*
-      this.appStateService.project.selectedTransition = null;
-      this.appStateService.project.selectedState = null;
-      */
+      this.deselectTool();
     }
+  }
+}
+
+export class ToolEvent {
+  target: string;
+  toggleable: boolean;
+  isActive: boolean;
+
+  constructor (target: string, toggleable: boolean, isActive: boolean) {
+    this.target = target;
+    this.toggleable = toggleable;
+    this.isActive = isActive;
   }
 }

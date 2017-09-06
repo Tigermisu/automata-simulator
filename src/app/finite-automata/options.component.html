@@ -29,7 +29,8 @@
     </span>
   </div>
   <div class="plus-adder">
-    <input type="text" id="alphabet" [(ngModel)]="editorSymbol" (keyup.enter)="addSymbolToAlphabet()">
-    <button (click)="addSymbolToAlphabet()">+</button>
+    <input type="text" id="alphabet" #editorSymbol 
+      (keyup.enter)="addSymbolToAlphabet(editorSymbol.value); editorSymbol.value = ''">
+    <button (click)="addSymbolToAlphabet(editorSymbol.value); editorSymbol.value = ''">+</button>
   </div>
 </div>
