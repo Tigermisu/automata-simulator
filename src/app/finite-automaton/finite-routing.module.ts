@@ -12,7 +12,7 @@ const routes: Routes = [
   { 
     path: 'finite', 
     component: FiniteComponent,
-    canDeactivate: [],
+    canDeactivate: [UnsavedChangesGuard],
     children: [
      {
        path: '',

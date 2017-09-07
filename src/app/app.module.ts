@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { FiniteModule } from './finite-automaton/finite.module';
+import { GrammarModule } from './grammar-designer/grammar.module';
 
 import { AppStateService } from './app-state.service';
 
@@ -18,7 +19,8 @@ import { MainMenuComponent }   from './main-menu.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FiniteModule
+    FiniteModule,
+    GrammarModule
   ],
   providers: [AppStateService],
   bootstrap: [AppComponent]

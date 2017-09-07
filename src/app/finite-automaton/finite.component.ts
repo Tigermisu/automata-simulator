@@ -13,6 +13,7 @@ declare var alertify;
   templateUrl: './finite.component.html'
 })
 export class FiniteComponent implements OnInit, OnDestroy {
+  private onUnloadFunction: EventListener;
   private subscription: Subscription;
   automaton: FiniteAutomaton;
 
@@ -68,21 +69,25 @@ export class FiniteComponent implements OnInit, OnDestroy {
       this.onToolClicked($event);
     });
 
-    window.addEventListener("beforeunload", ($e) => {
+    this.onUnloadFunction = ($e) => {
       if(this.automaton.metadata.isUnsaved) {
-        let msg = "You have unsaved changes. Are you sure you want to exit?";
         // Most browsers don't accept a custom message nowadays, but it's here just in case.
-        $e.returnValue = msg; 
-        return msg;
+        return "You have unsaved changes. Are you sure you want to exit?";
       }
-    });
+    }
+
+    window.addEventListener("beforeunload", this.onUnloadFunction);
   }
 
   ngOnDestroy() {
     this.appStateService.closeActiveProject();
     this.subscription.unsubscribe();
 
-    window.removeEventListener("beforeUnload");
+    window.removeEventListener("beforeUnload", this.onUnloadFunction);
+  }
+
+  onWindowUnload() {
+    
   }
 
   onToolClicked($event: ToolEvent) {

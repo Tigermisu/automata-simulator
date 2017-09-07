@@ -2,7 +2,6 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MainMenuComponent }   from './main-menu.component';
-import { FiniteComponent } from './finite-automaton/finite.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: "full"},

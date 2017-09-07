@@ -42,7 +42,7 @@ a span {
     top: 0;
 }
 
-.topbar > .brand, .topbar > .title {
+.topbar > .brand a, .topbar > .title {
     font-size: 22px;
     float: left;
     color: #fff;
@@ -50,7 +50,6 @@ a span {
 
 .topbar > .brand {
     user-select: none;
-    cursor: default;
 }
 
 .topbar > .title {

@@ -9,6 +9,8 @@ import { TableComponent } from './table.component';
 import { SimulatorComponent } from './simulator.component';
 import { OptionsComponent } from './options.component';
 
+import { UnsavedChangesGuard } from './unsaved-changes.guard';
+
 @NgModule({
   declarations: [
     FiniteComponent,
@@ -22,7 +24,9 @@ import { OptionsComponent } from './options.component';
     FiniteRoutingModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    UnsavedChangesGuard
+  ],
   bootstrap: [
     FiniteComponent
   ]
