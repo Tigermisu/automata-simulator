@@ -1,17 +1,13 @@
 <div class="text-wrapper">
   <h2>Options</h2>
   <label for="projectTitle">Automaton Title</label>
-  <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title"
-    (change)="this.automaton.metadata.isUnsaved = true;">
+  <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title" (change)="this.automaton.metadata.isUnsaved = true;">
 
   <label for="projectType">Automaton Type</label>
   <div class="radio-wrapper">
-    <input type="radio" name="automatonType" value="deterministic" id="deterministic"
-    [checked]="automaton.isDeterministic" 
-    (change)="setFiniteAsDeterministic(true)"> <label for="deterministic">Deterministic</label>
-    <input type="radio" name="automatonType" value="nondeterministic" id="nondeterministic"
-    [checked]="!automaton.isDeterministic" 
-    (change)="setFiniteAsDeterministic(false)"> <label for="nondeterministic">Non-Deterministic</label>
+    <input type="radio" name="automatonType" value="deterministic" id="deterministic" [checked]="automaton.isDeterministic" (change)="setFiniteAsDeterministic(true)">    <label for="deterministic">Deterministic</label>
+    <input type="radio" name="automatonType" value="nondeterministic" id="nondeterministic" [checked]="!automaton.isDeterministic"
+      (change)="setFiniteAsDeterministic(false)"> <label for="nondeterministic">Non-Deterministic</label>
   </div>
 
   <label for="alphabet">Alphabet</label>
@@ -30,8 +26,7 @@
     </span>
   </div>
   <div class="plus-adder">
-    <input type="text" id="alphabet" #editorSymbol 
-      (keyup.enter)="addSymbolToAlphabet(editorSymbol.value); editorSymbol.value = ''">
+    <input type="text" id="alphabet" #editorSymbol (keyup.enter)="addSymbolToAlphabet(editorSymbol.value); editorSymbol.value = ''">
     <button (click)="addSymbolToAlphabet(editorSymbol.value); editorSymbol.value = ''">+</button>
   </div>
 </div>

@@ -4,14 +4,13 @@
     <input type="text" [(ngModel)]="inputWord" id="word">
 
     <label for="speed">Speed: <span>{{ simSpeed }}</span></label>
-    <input type="range" [(ngModel)]="speed" id="speed" #speedRange
-      (change)="updateSpeed(speedRange.value)">
+    <input type="range" [(ngModel)]="speed" id="speed" #speedRange (change)="updateSpeed(speedRange.value)">
 
     <button (click)="toggleState()">{{ startText }}</button>
     <button (click)="step()">Step</button>
     <button (click)="reset()">Reset</button>
   </div>
   <div class="simulator-output">
-    
+
   </div>
 </div>

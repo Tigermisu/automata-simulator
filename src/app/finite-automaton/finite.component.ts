@@ -16,44 +16,44 @@ declare var alertify;
 export class FiniteComponent extends ProjectComponent implements OnInit, OnDestroy {
   project: FiniteAutomaton;
 
-  @HostListener('document:keydown', ['$event']) onKeyDown($event: KeyboardEvent) { 
+  @HostListener('document:keydown', ['$event']) onKeyDown($event: KeyboardEvent) {
     let keyCode = $event.code;
-    
-    if($event.ctrlKey) {
+
+    if ($event.ctrlKey) {
       $event.preventDefault();
       $event.stopPropagation();
-      switch(keyCode) {
+      switch (keyCode) {
         case "KeyO":
           this.openFile(this.parseAutomatonObject);
           break;
         case "KeyN":
           this.createNewFSM();
           break;
-        case "KeyS":        
+        case "KeyS":
           this.saveProject(this.saveFilterFunction);
           break;
         default:
           super.onKeyDown($event);
-      }       
+      }
     }
   }
-    
-  
+
+
   ngOnInit() {
     super.ngOnInit();
 
-    if(this.appStateService.hasActiveProject) {
+    if (this.appStateService.hasActiveProject) {
       this.project = this.appStateService.project as FiniteAutomaton;
-      if(this.project.type != "finite-automaton") { // This should never happen
+      if (this.project.type != "finite-automaton") { // This should never happen
         this.router.navigateByUrl("/home", { replaceUrl: true });
       }
     } else {
-      this.createNewFSM();     
+      this.createNewFSM();
     }
   }
 
   onToolClicked($event: ToolEvent) {
-    switch($event.target) {
+    switch ($event.target) {
       case "new":
         this.createNewFSM();
         break;
@@ -91,8 +91,8 @@ export class FiniteComponent extends ProjectComponent implements OnInit, OnDestr
       rawState.transitions.forEach((rawTransition, j) => {
         let destinationState = automaton.states.find((state) => {
           return state.id == (rawTransition.destination as any);
-        }); 
-        
+        });
+
         let newTransition = automaton.states[i].addTransition(destinationState);
 
         newTransition.shouldDuplicateLayout = rawTransition.shouldDuplicateLayout;
@@ -102,16 +102,16 @@ export class FiniteComponent extends ProjectComponent implements OnInit, OnDestr
         });
       });
     });
-    
+
     automaton.stateAutoIncrement = rawAutomaton.stateAutoIncrement;
 
     return automaton;
   }
 
   saveFilterFunction(key, value) {
-    if(key == 'origin' || key == 'destination') {
+    if (key == 'origin' || key == 'destination') {
       return value.id;
-    } else if(["selectedState", "selectedTransition", "activeElement"].includes(key)) {
+    } else if (["selectedState", "selectedTransition", "activeElement"].includes(key)) {
       return undefined;
     } else {
       return value;

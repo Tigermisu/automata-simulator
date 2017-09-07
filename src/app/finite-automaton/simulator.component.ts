@@ -16,26 +16,26 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   inputWord: string = "";
   speed: number = 50;
   simulation: Simulation;
-  automaton: FiniteAutomaton;  
-  
+  automaton: FiniteAutomaton;
+
 
   get simSpeed(): number {
     return this.speed;
   }
 
   get startText(): string {
-    if(typeof(this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
+    if (typeof (this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
       return "Pause";
-    } else if(this.simulation != null  && this.simulation.hasRemainingElements()) {
+    } else if (this.simulation != null && this.simulation.hasRemainingElements()) {
       return "Resume";
-    } else if(this.simulation != null) {
+    } else if (this.simulation != null) {
       return "Restart";
     }
     return "Start";
   }
 
-  constructor(private appStateService: AppStateService) {}
-  
+  constructor(private appStateService: AppStateService) { }
+
   ngOnInit() {
     this.automaton = this.appStateService.project as FiniteAutomaton;
     alertify.logPosition("top right");
@@ -43,32 +43,32 @@ export class SimulatorComponent implements OnInit, OnDestroy {
       this.automaton = newProject as FiniteAutomaton;
     });
   }
-  
+
   ngOnDestroy() {
     this.projectSubscription.unsubscribe();
   }
 
   toggleState() {
     let error = this.validateAutomaton();
-    if(error != null) {
+    if (error != null) {
       return this.outputError(error);
     }
 
-    if(typeof(this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
+    if (typeof (this.simulation) != "undefined" && this.simulation != null && this.simulation.isRunning) {
       this.stopSimulation();
-    } else if(this.simulation != null  && this.simulation.hasRemainingElements()) {
+    } else if (this.simulation != null && this.simulation.hasRemainingElements()) {
       this.resumeSimulation();
-    } else if(this.simulation != null) {
+    } else if (this.simulation != null) {
       this.reset();
       this.startSimulation();
     } else {
-      this.startSimulation();      
+      this.startSimulation();
     }
   }
 
   startSimulation() {
     let couldCreateSimulation = this.createSimulation();
-    if(couldCreateSimulation) {
+    if (couldCreateSimulation) {
       this.simulation.startInterval(2000 - this.speed * 20);
     }
   }
@@ -82,7 +82,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   }
 
   createSimulation(): boolean {
-    if(this.validateWord(this.inputWord)) {
+    if (this.validateWord(this.inputWord)) {
       this.simulation = new Simulation(this.automaton);
       this.simulation.initializeSimulation(this.inputWord);
       return true;
@@ -93,26 +93,26 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   }
 
   updateSpeed(value: number) {
-    if(!(typeof(this.simulation) == "undefined" 
-          || this.simulation == null
-          || !this.simulation.isRunning)) {
-            this.simulation.updateInterval(2000 - value * 20);          
-          }
+    if (!(typeof (this.simulation) == "undefined"
+      || this.simulation == null
+      || !this.simulation.isRunning)) {
+      this.simulation.updateInterval(2000 - value * 20);
+    }
   }
 
   step() {
     let error = this.validateAutomaton();
-    if(error != null) {
+    if (error != null) {
       return this.outputError(error);
     }
 
-    if(typeof(this.simulation) == "undefined" || this.simulation == null) {
+    if (typeof (this.simulation) == "undefined" || this.simulation == null) {
       let couldCreateSimulation = this.createSimulation();
-      if(couldCreateSimulation) {        
+      if (couldCreateSimulation) {
         this.simulation.step();
       }
     } else {
-      if(this.simulation.isRunning) {
+      if (this.simulation.isRunning) {
         this.stopSimulation();
       }
       this.simulation.step();
@@ -121,9 +121,9 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   }
 
   outputError(error: ValidationError) {
-    
+
     alertify.error(error.errorMessage);
-    if(error.culprit != null) {
+    if (error.culprit != null) {
       this.automaton.incorrectElement = error.culprit;
     }
     setTimeout(() => {
@@ -133,7 +133,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   reset() {
     this.automaton.activeElement = null;
-    if(this.simulation != null) {
+    if (this.simulation != null) {
       this.simulation.stopInterval();
       this.simulation = null;
     }
@@ -141,44 +141,44 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   // Returns null if the automaton is valid, else the error object
   validateAutomaton(): ValidationError {
-    let automaton = this.automaton, 
+    let automaton = this.automaton,
       initialStates = 0,
       finalStates = 0,
       alphabetSymbols = automaton.alphabet.symbols.length,
       isDeterministic = automaton.isDeterministic;
-    
-    for(let i = 0; i < automaton.states.length; i++) {
+
+    for (let i = 0; i < automaton.states.length; i++) {
       let state = automaton.states[i];
 
-      if(state.type == "initial" || state.type == "ambivalent") {
-        if(++initialStates > 1) {
+      if (state.type == "initial" || state.type == "ambivalent") {
+        if (++initialStates > 1) {
           return new ValidationError("An automaton can only have one initial state", state);
         }
       }
 
-      if(state.type == "final" || state.type == "ambivalent") {
+      if (state.type == "final" || state.type == "ambivalent") {
         finalStates++;
       }
 
-      if(isDeterministic) {
+      if (isDeterministic) {
         let conditions = [];
 
-        for(let j = 0; j < state.transitions.length; j++) {
-          if(state.transitions[j].conditions.length == 0) {
+        for (let j = 0; j < state.transitions.length; j++) {
+          if (state.transitions[j].conditions.length == 0) {
             return new ValidationError("A DFA can't have Kleene Closures", state);
           }
           conditions = conditions.concat(state.transitions[j].conditions)
         }
 
-        if(conditions.length < alphabetSymbols) {
+        if (conditions.length < alphabetSymbols) {
           return new ValidationError("A DFA state must have a transition for each symbol in the alphabet.", state);
-        } else if(this.hasRepeatedConditions(conditions)) {
+        } else if (this.hasRepeatedConditions(conditions)) {
           return new ValidationError("A DFA can only have one transition for each symbol in the alphabet.", state);
         }
-      }      
+      }
     }
 
-    if(finalStates == 0) {
+    if (finalStates == 0) {
       return new ValidationError("There must be at least one final state", null);
     }
     return null;
@@ -187,8 +187,8 @@ export class SimulatorComponent implements OnInit, OnDestroy {
   hasRepeatedConditions(conditions): boolean {
     // If we have repeated symbols
     let seenSymbols = [];
-    for(let i = 0; i < conditions.length; i++) {
-      if(seenSymbols.includes(conditions[i].symbol)) {
+    for (let i = 0; i < conditions.length; i++) {
+      if (seenSymbols.includes(conditions[i].symbol)) {
         return true;
       }
       seenSymbols.push(conditions[i].symbol)
@@ -198,15 +198,15 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   validateWord(word: string) {
     let alphabet = this.automaton.alphabet.symbols;
-    for(let i = 0; i < word.length; i++) {
+    for (let i = 0; i < word.length; i++) {
       let contained = false;
-      for(let j = 0; j < alphabet.length; j++) {
-        if(word[i] == alphabet[j].symbol) {
+      for (let j = 0; j < alphabet.length; j++) {
+        if (word[i] == alphabet[j].symbol) {
           contained = true;
           break;
-        }        
+        }
       }
-      if(!contained) return false;
+      if (!contained) return false;
     }
     return true;
   }
@@ -222,7 +222,7 @@ class Simulation {
   currentElement: TraversalElement;
   lastDepth: number;
   reachedValidity: boolean;
-  
+
 
   get isRunning() {
     return this.stepInterval != null;
@@ -232,9 +232,9 @@ class Simulation {
     this.automaton = automaton;
     this.stepInterval = null;
 
-    for(let i = 0; i < automaton.states.length; i++) {
-      if(automaton.states[i].type == "initial" 
-          || automaton.states[i].type == "ambivalent") {
+    for (let i = 0; i < automaton.states.length; i++) {
+      if (automaton.states[i].type == "initial"
+        || automaton.states[i].type == "ambivalent") {
         this.initialState = automaton.states[i];
         break;
       }
@@ -251,7 +251,7 @@ class Simulation {
     this.lastDepth = 0;
     this.reachedValidity = false;
     this.traversalStack = [new TraversalState(0, "state", this.initialState)];
-  
+
     this.automaton.selectedState = null;
     this.automaton.selectedTransition = null;
   }
@@ -278,47 +278,47 @@ class Simulation {
   step() {
     this.currentElement = this.traversalStack.pop();
 
-    if(typeof(this.currentElement) == "undefined") { // Our traversal stack is empty
-      if(this.startInterval != null) { // Pause the simulation
+    if (typeof (this.currentElement) == "undefined") { // Our traversal stack is empty
+      if (this.startInterval != null) { // Pause the simulation
         this.stopInterval();
       }
-      if(this.lastDepth + 1 < this.inputWord.length && !this.reachedValidity) {
+      if (this.lastDepth + 1 < this.inputWord.length && !this.reachedValidity) {
         // We ran out of states and we still hadn't processed the word or validated it in another branch       
         alertify.log("The word is invalid");
       }
       return; // Stop the step
-    } 
+    }
 
-    if(this.currentElement.type == "state") {
+    if (this.currentElement.type == "state") {
       let stateTraversalElement = this.currentElement as TraversalState,
         state = stateTraversalElement.state,
         inputSymbol = this.inputWord[stateTraversalElement.depth];
 
       this.automaton.activeElement = state;
-      this.lastDepth =stateTraversalElement.depth;
-      
-      if(typeof(inputSymbol) == "undefined") { // We reached the end of the word
-        if(state.type == "final" || state.type == "ambivalent") {
+      this.lastDepth = stateTraversalElement.depth;
+
+      if (typeof (inputSymbol) == "undefined") { // We reached the end of the word
+        if (state.type == "final" || state.type == "ambivalent") {
           alertify.success("The word is valid");
           this.reachedValidity = true; // If this is a final state, we win!
-        } else if(this.traversalStack.length == 0 && !this.reachedValidity) {
+        } else if (this.traversalStack.length == 0 && !this.reachedValidity) {
           alertify.log("The word is invalid"); // Else, if there is nothing more in the stack we lose.
         }
       } else { // If we still have a word, get ready to branch
-        for(let i = state.transitions.length - 1; i >= 0; i--) {
+        for (let i = state.transitions.length - 1; i >= 0; i--) {
           let transition = state.transitions[i]; // For every transition that matches our condition, push it to the stack
-          if(transition.conditions.length == 0 
-             || transition.hasCondition(new AlphabetSymbol(inputSymbol))) {
-               if(transition.conditions.length == 0) { // Kleene Closures should not consume the string
-                this.traversalStack.push(new TraversalTransition(
-                  stateTraversalElement.depth - 1, "transition", transition));
-               } else { 
-                this.traversalStack.push(new TraversalTransition(
-                  stateTraversalElement.depth, "transition", transition));
-               }
+          if (transition.conditions.length == 0
+            || transition.hasCondition(new AlphabetSymbol(inputSymbol))) {
+            if (transition.conditions.length == 0) { // Kleene Closures should not consume the string
+              this.traversalStack.push(new TraversalTransition(
+                stateTraversalElement.depth - 1, "transition", transition));
+            } else {
+              this.traversalStack.push(new TraversalTransition(
+                stateTraversalElement.depth, "transition", transition));
+            }
           }
         }
-      }      
+      }
     } else { // If this is a transition, just mark it as active for the front end and push the state to the next stack
       let transitionTraversalElement = this.currentElement as TraversalTransition,
         transition = transitionTraversalElement.transition,
@@ -327,7 +327,7 @@ class Simulation {
       this.automaton.activeElement = transition;
 
       this.traversalStack.push(new TraversalState(
-          transitionTraversalElement.depth + 1, "state", destinationState));
+        transitionTraversalElement.depth + 1, "state", destinationState));
     }
   }
 

@@ -13,15 +13,15 @@ export class ToolbarComponent implements OnInit {
 
   @Output() toolclicked: EventEmitter<ToolEvent> = new EventEmitter();
 
-  constructor(private appStateService: AppStateService) {}
-  
+  constructor(private appStateService: AppStateService) { }
 
-  ngOnInit(): void {    
+
+  ngOnInit(): void {
     this.appStateService.registerToolbarComponent(this);
   }
 
   activateToolbar(type: string, enable: boolean) {
-    switch(type) {
+    switch (type) {
       case "finite-automaton":
         this.toolbarEnableState.finiteautomaton = enable;
         break;
@@ -37,7 +37,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   onToolClick(toolName: string, isToggleable: boolean) {
-    if(isToggleable) {
+    if (isToggleable) {
       this.selectTool(toolName);
     }
     this.toolclicked.emit(new ToolEvent(toolName, isToggleable, this.selectedTool == toolName));
@@ -45,7 +45,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   selectTool(tool: string) {
-    if(this.selectedTool != tool) {
+    if (this.selectedTool != tool) {
       this.selectedTool = tool;
     } else {
       this.deselectTool();
@@ -70,7 +70,7 @@ export class ToolEvent {
   toggleable: boolean;
   isActive: boolean;
 
-  constructor (target: string, toggleable: boolean, isActive: boolean) {
+  constructor(target: string, toggleable: boolean, isActive: boolean) {
     this.target = target;
     this.toggleable = toggleable;
     this.isActive = isActive;

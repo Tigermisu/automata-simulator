@@ -10,10 +10,10 @@ import { AlphabetSymbol } from '../automaton';
   templateUrl: './options.component.html'
 })
 export class OptionsComponent implements OnInit, OnDestroy {
-  private projectSubscription: Subscription;  
+  private projectSubscription: Subscription;
   private automaton: FiniteAutomaton;
 
-  constructor(private appStateService: AppStateService) {}
+  constructor(private appStateService: AppStateService) { }
 
   ngOnInit() {
     this.automaton = this.appStateService.project as FiniteAutomaton;
@@ -36,16 +36,16 @@ export class OptionsComponent implements OnInit, OnDestroy {
     this.automaton.metadata.isUnsaved = true;
   }
 
-  addSymbolToAlphabet(editorSymbol: string) {      
-    if(editorSymbol.trim() != '') {// Prevent empty symbols
+  addSymbolToAlphabet(editorSymbol: string) {
+    if (editorSymbol.trim() != '') {// Prevent empty symbols
       let symbolArray = editorSymbol.trim().split(',');
       symbolArray.forEach((stringSymbol) => {
         let symbol = new AlphabetSymbol(stringSymbol.trim());
-        if(symbol.symbol != "") {
+        if (symbol.symbol != "") {
           this.automaton.alphabet.addSymbol(symbol);
           this.automaton.metadata.isUnsaved = true;
         }
       });
     }
-  }  
+  }
 }

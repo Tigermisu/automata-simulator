@@ -1,48 +1,48 @@
 .simulator-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    height: 200px;
-    border-top: #bcbcbc solid 1px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: 200px;
+  border-top: #bcbcbc solid 1px;
 }
 
 .simulator-options {
-    width: 200px;
-    min-height: 100%;
-    overflow-y: auto;
-    float: left;
-    background-color: #f0f0f0;
-    border-right: #bcbcbc solid 1px;
-    padding: 8px;
+  width: 200px;
+  min-height: 100%;
+  overflow-y: auto;
+  float: left;
+  background-color: #f0f0f0;
+  border-right: #bcbcbc solid 1px;
+  padding: 8px;
 }
 
 .simulator-options input {
-    width: 100%;
-    display: block;
-    margin-bottom: 10px;
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
 }
 
 .simulator-options input[type=text] {
-    height: 30px;
-    font-size: 18px;
-    padding: 0 4px;
+  height: 30px;
+  font-size: 18px;
+  padding: 0 4px;
 }
 
 .simulator-options button {
-    width: 58px;
-    margin: 10px 0;
-    cursor: pointer;
-    font-size: 12px;
-    padding: 0;
-    height: 30px;
+  width: 58px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  height: 30px;
 }
 
 .simulator-output {
-    background-color: #fff;
-    float: right;
-    min-height: 100%;
-    overflow-y: auto;
-    width: calc(100vw - 200px);
+  background-color: #fff;
+  float: right;
+  min-height: 100%;
+  overflow-y: auto;
+  width: calc(100vw - 200px);
 }

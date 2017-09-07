@@ -10,20 +10,20 @@ import { ToolEvent } from '../toolbar.component';
 export class GrammarComponent extends ProjectComponent implements OnInit, OnDestroy {
   protected project: FormalGrammar
 
-  ngOnInit() {   
+  ngOnInit() {
     super.ngOnInit();
-    if(this.appStateService.hasActiveProject) {
+    if (this.appStateService.hasActiveProject) {
       this.project = this.appStateService.project as FormalGrammar;
-      if(this.project.type != "formal-grammar") { // This should never happen
+      if (this.project.type != "formal-grammar") { // This should never happen
         this.router.navigateByUrl("/home", { replaceUrl: true });
       }
     } else {
-      this.newProject(new FormalGrammar(GrammarType.RegularGrammar), "New Formal Grammar"); 
+      this.newProject(new FormalGrammar(GrammarType.RegularGrammar), "New Formal Grammar");
     }
   }
 
   onToolClicked($event: ToolEvent) {
-    switch($event.target) {
+    switch ($event.target) {
       case "new":
         this.newProject(new FormalGrammar(GrammarType.RegularGrammar), "New Formal Grammar");
         break;

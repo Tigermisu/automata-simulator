@@ -1,17 +1,17 @@
 <div class="general-tools" [attr.style]="style" *ngIf="appStateService.project">
-    <div id="saveTool" class="tool save" (click)="onToolClick('save', false)"></div>
-    <div id="newTool" class="tool new" (click)="onToolClick('new', false)"></div>
-    <div id="openTool" class="tool open" (click)="onToolClick('open', false)"></div>
-    <div id="deleteTool" class="tool delete" (click)="onToolClick('delete', false)"></div>
-    <div class="separator"></div>
-    <div id="undoTool" class="tool undo" (click)="onToolClick('undo', false)"></div>
-    <div id="redoTool" class="tool redo" (click)="onToolClick('redo', false)"></div>
+  <div id="saveTool" class="tool save" (click)="onToolClick('save', false)"></div>
+  <div id="newTool" class="tool new" (click)="onToolClick('new', false)"></div>
+  <div id="openTool" class="tool open" (click)="onToolClick('open', false)"></div>
+  <div id="deleteTool" class="tool delete" (click)="onToolClick('delete', false)"></div>
+  <div class="separator"></div>
+  <div id="undoTool" class="tool undo" (click)="onToolClick('undo', false)"></div>
+  <div id="redoTool" class="tool redo" (click)="onToolClick('redo', false)"></div>
 </div>
 <div class="contextual-tools">
-    <div id="finiteTools" class="contextual-wrapper" *ngIf="toolbarEnableState.finiteautomaton">
-        <div id="newFiniteState" class="tool newFiniteState" [class.active]="selectedTool == 'newFiniteState'" 
-            (click)="onToolClick('newFiniteState', true)"></div>
-        <div id="newFiniteTransition" class="tool newFiniteTransition" [class.active]="selectedTool == 'newFiniteTransition'"
-            (click)="onToolClick('newFiniteTransition', true)"></div>
-    </div>
+  <div id="finiteTools" class="contextual-wrapper" *ngIf="toolbarEnableState.finiteautomaton">
+    <div id="newFiniteState" class="tool newFiniteState" [class.active]="selectedTool == 'newFiniteState'" 
+      (click)="onToolClick('newFiniteState', true)"></div>
+    <div id="newFiniteTransition" class="tool newFiniteTransition" [class.active]="selectedTool == 'newFiniteTransition'"
+      (click)="onToolClick('newFiniteTransition', true)"></div>
+  </div>
 </div>

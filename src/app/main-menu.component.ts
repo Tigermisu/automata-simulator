@@ -7,5 +7,5 @@ import { AppStateService } from './app-state.service';
   styleUrls: ['./main-menu.component.css']
 })
 export class MainMenuComponent {
-  constructor(private appStateService: AppStateService) {}
+  constructor(private appStateService: AppStateService) { }
 }

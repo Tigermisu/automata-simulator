@@ -5,7 +5,6 @@ export class FormalGrammar extends Project {
 
     constructor(grammarType: GrammarType) {
         super('formal-grammar')
-
         this.grammarType = grammarType;
     }
 }

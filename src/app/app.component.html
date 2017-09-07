@@ -1,17 +1,17 @@
-<div class="topbar">  
-    <div class="brand">
-        <a routerLink="/">Christomata</a>
-    </div>
-    
-    <div class="title">
-        {{ appStateService.project?.metadata.title }}
-    </div>
+<div class="topbar">
+  <div class="brand">
+    <a routerLink="/">Christomata</a>
+  </div>
+
+  <div class="title">
+    {{ appStateService.project?.metadata.title }}
+  </div>
 </div>
 
 <div class="workspace">
-    <div class="toolbar">
-        <toolbar #toolbar></toolbar>
-    </div>
-        
-    <router-outlet></router-outlet>
+  <div class="toolbar">
+    <toolbar #toolbar></toolbar>
+  </div>
+
+  <router-outlet></router-outlet>
 </div>

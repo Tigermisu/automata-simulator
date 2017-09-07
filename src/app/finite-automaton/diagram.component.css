@@ -1,210 +1,210 @@
 .state {
-    position: absolute;
-    display: flex;
-    top: 0;
-    left: 0;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    border: #333 solid 1px;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: #fff;
-    user-select: none;
+  position: absolute;
+  display: flex;
+  top: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border: #333 solid 1px;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #fff;
+  user-select: none;
 }
 
 .state.selected {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .state.initial:before {
-    content: "";
-    position: absolute;
-    left: -15px;
-    border-left: 8px solid #333;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
+  content: "";
+  position: absolute;
+  left: -15px;
+  border-left: 8px solid #333;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
 }
 
 .state.initial:after {
-    content: "";
-    position: absolute;
-    width: 32px;
-    height: 1px;
-    background-color: #333;
-    left: -45px;
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 1px;
+  background-color: #333;
+  left: -45px;
 }
 
 .state.final .finalCircle:after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    width: 48px;
-    height: 48px;
-    border: #333 solid 1px;
-    border-radius: 50%;
-    left: 4px;
-    top: 4px;
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 48px;
+  height: 48px;
+  border: #333 solid 1px;
+  border-radius: 50%;
+  left: 4px;
+  top: 4px;
 }
 
 .transition {
-    position: absolute;
-    width: 10px;
-    border-top: #333 solid 1px;
+  position: absolute;
+  width: 10px;
+  border-top: #333 solid 1px;
 }
 
 .transition.selected {
-    border-top-width: 3px;
+  border-top-width: 3px;
 }
 
 .transition:after {
-    content: "";
-    position: absolute;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-
+  content: "";
+  position: absolute;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
 }
 
 .transition.self {
-    height: 45px;
-    border-radius: 50%;
-    border-right: #333 solid 1px;
-    border-left: #333 solid 1px;
-    border-bottom: transparent solid 3px;
+  height: 45px;
+  border-radius: 50%;
+  border-right: #333 solid 1px;
+  border-left: #333 solid 1px;
+  border-bottom: transparent solid 3px;
 }
 
 .transition.rightArrow:after {
-    right: -1px;
-    top: -6.5px;
-    border-left: 8px solid #333;
+  right: -1px;
+  top: -6.5px;
+  border-left: 8px solid #333;
 }
 
 .transition.leftArrow:after {
-    left: -1px;
-    top: -6.5px;
-    border-right: 8px solid #333;
+  left: -1px;
+  top: -6.5px;
+  border-right: 8px solid #333;
 }
 
-.transition:not(.self).selected.leftArrow:after, .transition:not(.self).active.leftArrow:after {
-    top: -7.5px;
-    left: -2px;
+.transition:not(.self).selected.leftArrow:after,
+.transition:not(.self).active.leftArrow:after {
+  top: -7.5px;
+  left: -2px;
 }
 
-.transition:not(.self).selected.rightArrow:after, .transition:not(.self).active.rightArrow:after {
-    top: -7.5px;
-    right: -2px;
+.transition:not(.self).selected.rightArrow:after,
+.transition:not(.self).active.rightArrow:after {
+  top: -7.5px;
+  right: -2px;
 }
 
 .transition.self:after {
-    right: 0;
-    top: initial;
-    bottom: 0;
-    border-left: 8px solid #333;
-    transform: rotate(120deg);
+  right: 0;
+  top: initial;
+  bottom: 0;
+  border-left: 8px solid #333;
+  transform: rotate(120deg);
 }
 
 .transition .conditions {
-    position: absolute;
-    left: 50%;
-    top: -25px;
-    color: #999;
-    transform: translate(-50%);
+  position: absolute;
+  left: 50%;
+  top: -25px;
+  color: #999;
+  transform: translate(-50%);
 }
 
 .transition.duplicateLayout.leftArrow .conditions {
-    top: 0;
+  top: 0;
 }
 
 .transition.self .conditions {
-    min-width: 100px;
-    display: block;
-    text-align: center;
-    font-size: 10px;
-    bottom: 45px;
-    top: initial;
+  min-width: 100px;
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  bottom: 45px;
+  top: initial;
 }
 
 .context-menu {
-    position: absolute;
-    padding: 8px;
-    width: 160px;
-    background-color: #fff;
-    box-shadow: 1px 2px 6px 0px #999;
-    z-index: 5;
+  position: absolute;
+  padding: 8px;
+  width: 160px;
+  background-color: #fff;
+  box-shadow: 1px 2px 6px 0px #999;
+  z-index: 5;
 }
 
 .context-menu:after {
-    content: "";
-    position: absolute;
-    bottom: -10px;
-    left: 72px;
-    border-top: #999 solid 10px;
-    border-right: transparent solid 8px;
-    border-left: transparent solid 8px;
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 72px;
+  border-top: #999 solid 10px;
+  border-right: transparent solid 8px;
+  border-left: transparent solid 8px;
 }
 
 .context-menu input[type=text] {
-    max-width: 100%;
-    margin-bottom: 5px;
-    font-size: 16px;
-    height: 30px;
-    padding: 4px;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-size: 16px;
+  height: 30px;
+  padding: 4px;
 }
 
 .context-menu .checkbox-wrapper {
-    margin: 5px 0;
+  margin: 5px 0;
 }
 
 .context-menu .alphabet-symbols {
-    margin: 0;
-
+  margin: 0;
 }
 
 .context-menu .plus-adder input {
-    max-width: calc(100% - 30px);
-    margin: 0;
+  max-width: calc(100% - 30px);
+  margin: 0;
 }
 
 .context-menu .plus-adder button {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
 }
 
 .context-menu .formal-string {
-    display: block;
-    text-align: center;
-    margin-top: 5px;
-    font-size: 10px;
-    color: #bcbcbc;
+  display: block;
+  text-align: center;
+  margin-top: 5px;
+  font-size: 10px;
+  color: #bcbcbc;
 }
 
 .context-menu .alphabet-symbols .symbol-entry {
-    margin: 1px;
-    padding: 2px;
+  margin: 1px;
+  padding: 2px;
 }
 
 .state.active {
-    background-color: #67b2e4;
+  background-color: #67b2e4;
 }
 
 .transition.active {
-    border-color: #3498db;
-    border-width: 3px;
+  border-color: #3498db;
+  border-width: 3px;
 }
 
 .transition.active.self {
-    border-bottom-color: transparent;
+  border-bottom-color: transparent;
 }
 
 .transition.active.leftArrow:after {
-    border-right-color: #3498db;
+  border-right-color: #3498db;
 }
 
 .transition.active.rightArrow:after {
-    border-left-color: #3498db;
+  border-left-color: #3498db;
 }
 
 .state.incorrect {
-    background-color: #e74c3c;
+  background-color: #e74c3c;
 }

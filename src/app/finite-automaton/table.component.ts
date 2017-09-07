@@ -5,6 +5,5 @@ import { AppStateService } from '../app-state.service';
   templateUrl: './table.component.html'
 })
 export class TableComponent {
-  constructor(private appStateService: AppStateService) {}
-  
+  constructor(private appStateService: AppStateService) { }
 }
