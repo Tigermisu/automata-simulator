@@ -10,6 +10,8 @@ import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar.component';
 import { MainMenuComponent } from './main-menu.component';
 
+import { UnsavedChangesGuard } from './unsaved-changes.guard';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +24,10 @@ import { MainMenuComponent } from './main-menu.component';
     FiniteModule,
     GrammarModule
   ],
-  providers: [AppStateService],
+  providers: [
+    AppStateService,
+    UnsavedChangesGuard
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

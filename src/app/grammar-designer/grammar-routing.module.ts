@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { GrammarComponent } from './grammar.component';
 
+import { UnsavedChangesGuard } from '../unsaved-changes.guard';
+
 const routes: Routes = [
   {
     path: 'grammar',

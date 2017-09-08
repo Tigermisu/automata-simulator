@@ -1,3 +1,53 @@
 <div class="grammar-workspace">
-  I am the grammar component!
+  <div class="half">
+    <label for="projectTitle">Grammar Title</label>
+    <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title" (change)="this.project.metadata.isUnsaved = true;">
+
+    <label for="grammarType">Grammar Type</label>
+    <div class="radio-wrapper">
+      <input type="radio" name="grammarType" value="type" id="type" [checked]="project.grammarType == 0" (change)="changeType(1)">
+      <label for="type">Regular Grammar</label>
+    </div>
+
+    <label for="terminals">Terminal Symbols</label>
+    <div class="alphabet-symbols">
+      <div class="symbol-entry" *ngFor="let symbol of project.terminalSymbols">
+        {{ symbol }}
+        <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+      </div>
+      <br>
+      <span>
+        {{ project.getFormalString(true) }}
+      </span>
+    </div>
+    <div class="plus-adder">
+      <input type="text" id="terminals" #terminalSymbolInput (keyup.enter)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">
+      <button (click)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">+</button>
+    </div>
+
+    <label for="nonterminals">Non-Terminal Symbols</label>
+    <div class="alphabet-symbols">
+      <div class="symbol-entry" *ngFor="let symbol of project.nonterminalSymbols">
+        {{ symbol }}
+        <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+      </div>
+       <br>
+       <span>
+        {{ project.getFormalString(false) }}
+       </span>
+    </div>
+    <div class="plus-adder">
+      <input type="text" id="nonterminals" #nonterminalSymbolInput (keyup.enter)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">
+      <button (click)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">+</button>
+    </div>
+  </div>
+  <div class="half">
+    <label for="InputWord">Input Word</label>
+    <br>
+    <input type="text" id="InputWord" class="tester">
+    <button class="tester">Test</button>
+    <div class="previewer">
+
+    </div>
+  </div>
 </div>

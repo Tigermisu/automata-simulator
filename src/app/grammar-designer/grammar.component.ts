@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormalGrammar, GrammarType } from './formal-grammar';
+import { FormalGrammar, GrammarType, GrammarSymbol } from './formal-grammar';
 import { ProjectComponent } from '../project.component'
 import { ToolEvent } from '../toolbar.component';
 
@@ -8,7 +8,7 @@ import { ToolEvent } from '../toolbar.component';
   styleUrls: ['./grammar.component.css']
 })
 export class GrammarComponent extends ProjectComponent implements OnInit, OnDestroy {
-  protected project: FormalGrammar
+  project: FormalGrammar
 
   ngOnInit() {
     super.ngOnInit();
@@ -40,10 +40,33 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
     }
   }
 
+  changeType(newType: GrammarType) {
+    this.project.grammarType = newType;
+    this.project.metadata.isUnsaved = true;
+  }
+
   parseGrammarObject(rawGrammar: FormalGrammar): FormalGrammar {
     let grammar = new FormalGrammar(rawGrammar.grammarType);
     grammar.metadata = rawGrammar.metadata;
 
     return grammar;
+  }
+
+  removeSymbolFromGrammar(symbolToRemove: GrammarSymbol) {
+    this.project.removeSymbol(symbolToRemove);
+    this.project.metadata.isUnsaved = true;
+  }
+
+  addSymbolToGrammar(rawSymbol: string, isTerminal: boolean) {
+    if (rawSymbol.trim() != '') {// Prevent empty symbols
+      let symbolArray = rawSymbol.trim().split(',');
+      symbolArray.forEach((stringSymbol) => {
+        let symbol = new GrammarSymbol(stringSymbol.trim());
+        if (symbol.symbol != "") {
+          this.project.addSymbol(symbol, isTerminal);
+          this.project.metadata.isUnsaved = true;
+        }
+      });
+    }
   }
 }

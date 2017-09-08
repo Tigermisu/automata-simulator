@@ -7,3 +7,65 @@
   padding: 8px;
   background-color: #fafafa;
 }
+
+.half {
+  width: 50%;
+  float: left;
+  min-height: 100%;
+  padding: 8px;
+}
+
+.previewer {    
+  width: 100%;
+  border: #bcbcbc solid 1px;
+  background-color: #fff;  
+}
+
+input:not([type=radio])  {
+  display: block;
+  height: 30px;
+  font-size: 14px;
+  margin: 3px 0 10px;
+  width: 100%;
+  padding: 0 8px;
+}
+
+input[type=radio] {
+  height: initial;
+  widows: initial;
+  margin-bottom: 0;
+}
+
+input.tester {
+  width: calc(100% - 52px);
+  float: left;
+}
+
+button.tester {
+  width: 50px;
+  float: right;
+  margin-top: 3px;
+  height: 30px;
+  padding-top: 5px;
+}
+
+button.tester:after {
+  content: "";
+  display: block;
+  clear: both;
+  margin-bottom: 8px;
+}
+
+.radio-wrapper {
+  display: block;
+  margin: 5px 0 10px;
+}
+
+.radio-wrapper label {
+  font-size: 14px;
+}
+
+.radio-wrapper label:after {
+  content: "";
+  display: block;
+}

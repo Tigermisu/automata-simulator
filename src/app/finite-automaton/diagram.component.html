@@ -2,8 +2,8 @@
   (mousedown)="onCanvasMouseDown($event)"
   (mouseup)="onCanvasMouseUp($event)"
   (contextmenu)="preventContextMenu($event)"
-  (mousemove)="onCanvasMouseMove($event)"
-  >
+  (mousemove)="onCanvasMouseMove($event)">
+  
   <div class="state" *ngFor="let state of automaton.states"
   [style.transform]="state.transformPosition"
   [class.active]="automaton.activeElement == state"
