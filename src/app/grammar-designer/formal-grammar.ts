@@ -2,6 +2,7 @@ import { Project } from '../project';
 
 export class FormalGrammar extends Project {
     grammarType: GrammarType;
+    startSymbol: GrammarSymbol;
     terminalSymbols: GrammarSymbol[];
     nonterminalSymbols: GrammarSymbol[];
     productionRules: ProductionRule[];
@@ -12,6 +13,18 @@ export class FormalGrammar extends Project {
         this.terminalSymbols = [];
         this.nonterminalSymbols = [];
         this.productionRules = [];
+        this.startSymbol = null;
+    }
+
+    get startFormalString(): string {
+        if(this.startSymbol != null) {
+            return "S = " + this.startSymbol.symbol;
+        }
+        return "<Please click on a symbol to designiate it as Start>";
+    }
+
+    selectStartSymbol(symbol: GrammarSymbol) {
+        this.startSymbol = symbol;
     }
 
     addRule(rule: ProductionRule) {
@@ -29,7 +42,7 @@ export class FormalGrammar extends Project {
 
     hasRule(rule: ProductionRule) {
         for (let i = 0; i < this.productionRules.length; i++) {
-            if (this.productionRules[i] == rule) return true;
+            if (this.productionRules[i].equals(rule)) return true;
         }
         return false;
     }
@@ -43,11 +56,14 @@ export class FormalGrammar extends Project {
             }
             if (isTerminal) {
                 this.terminalSymbols.push(s);
-
                 this.terminalSymbols.sort(sortFunction);
             } else {
                 this.nonterminalSymbols.push(s);
                 this.nonterminalSymbols.sort(sortFunction);
+
+                if(this.startSymbol == null && s.symbol == "S") {
+                    this.startSymbol = s;
+                }
             }
         }
     }
@@ -59,6 +75,7 @@ export class FormalGrammar extends Project {
         } else {
             index = this.nonterminalSymbols.indexOf(grammarSymbol);
             if (index != -1) {
+                if(this.startSymbol == grammarSymbol) this.startSymbol = null;
                 this.nonterminalSymbols.splice(index, 1);
             }
         }
@@ -75,25 +92,32 @@ export class FormalGrammar extends Project {
     }
 
     getFormalString(fromTerminals: boolean) {
-        let iterable;
+        let iterable, symbol;
         if (fromTerminals) {
             iterable = this.terminalSymbols;
+            symbol = '\u03A3';
         } else {
             iterable = this.nonterminalSymbols;
+            symbol = 'N';
         }
 
         if (iterable.length > 0) {
             let setString = "",
-                lastIndex = iterable.length - 1;
+                lastIndex = iterable.length - 1,
+                resultString;
             iterable.forEach((symbol, index) => {
                 setString += symbol.symbol;
                 if (index != lastIndex) {
                     setString += ", ";
                 }
             });
-            return '\u03A3 = {' + setString + '}';
+            resultString = symbol + ' = {' + setString + '}';
+            if(!fromTerminals) {
+                return resultString += "  " + this.startFormalString;
+            }
+            return resultString;
         }
-        return '\u03A3 = { \u2205 }';
+        return symbol +' = { \u2205 }';
     }
 }
 
@@ -116,5 +140,24 @@ export class GrammarSymbol {
 
 export class ProductionRule {
     leftHandSide: GrammarSymbol[];
-    righthandSide: GrammarSymbol[];
+    rightHandSide: GrammarSymbol[];
+
+    constructor(left, right) {
+        this.leftHandSide = left;
+        this.rightHandSide = right;
+    }
+
+    equals(rule: ProductionRule) {
+        if(this.leftHandSide.length != rule.leftHandSide.length 
+            || this.rightHandSide.length != rule.rightHandSide.length) {
+                return false;
+            }
+        for(let i = 0; i < this.leftHandSide.length; i++) {
+            if(this.leftHandSide[i] != rule.leftHandSide[i]) return false;
+        }
+        for(let i = 0; i < this.rightHandSide.length; i++) {
+            if(this.rightHandSide[i] != rule.rightHandSide[i]) return false;
+        }
+        return true;
+    }
 }

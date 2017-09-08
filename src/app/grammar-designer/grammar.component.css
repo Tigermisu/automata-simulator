@@ -15,10 +15,14 @@
   padding: 8px;
 }
 
-.previewer {    
-  width: 100%;
+.previewer {
   border: #bcbcbc solid 1px;
-  background-color: #fff;  
+  background-color: #fff;
+  position: absolute;
+  top: 80px;
+  left: calc(50% + 8px);
+  right: 16px;
+  bottom: 8px;
 }
 
 input:not([type=radio])  {
@@ -36,9 +40,30 @@ input[type=radio] {
   margin-bottom: 0;
 }
 
-input.tester {
-  width: calc(100% - 52px);
+.plus-adder, .alphabet-symbols {
+  width: 100%;
+}
+
+.plus-adder > input {
+  width: calc(100% - 30px);
   float: left;
+}
+
+.plus-adder > button {
+  width: 30px;
+  height: 30px;
+  float: right;
+  cursor: pointer;
+  margin-top: 3px;
+}
+
+input.tester {
+  width: calc(100% - 50px);
+  float: left;
+}
+
+.alphabet-symbols > span:last-child {
+  display: block;
 }
 
 button.tester {
@@ -68,4 +93,75 @@ button.tester:after {
 .radio-wrapper label:after {
   content: "";
   display: block;
+}
+
+.production-rules-input input {
+  float: left;
+  width: calc(50% - 30px);
+}
+
+.arrow {
+  position: relative;
+  float: left;
+  display: block;
+  height: 4px;
+  width: 20px;
+  background-color: #333;
+  margin: 15px 5px;
+}
+
+.arrow:after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  border-top: transparent solid 8px;
+  border-bottom: transparent solid 8px;
+  border-left: #333 solid 10px;
+}
+
+.production-rules-input button {
+  float: left;
+  height: 30px;
+  width: 30px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.rule {
+  padding: 2px 4px;
+  background-color: #f0f0f0;
+  display: inline-block;
+}
+
+.rule:before {
+  content: "";
+  direction: block;
+}
+
+.rule .arrow {
+  float: none;
+  height: 3px;
+  width: 15px;
+  margin: 4px 5px;
+  display: inline-block;
+}
+
+.rule span.remove {
+  color: #e74c3c;
+  cursor: pointer;
+  border-right: #fafafa solid 1px;
+}
+
+.rule span.remove:hover {
+  color: #c0392b;
+  background-color: #d0d0d0;
+}
+
+.rule .arrow:after {
+  border-top-width: 6px;
+  border-bottom-width: 6px;
+  border-left-width: 8px;
+  top: -4.5px;
+  right: -3px;
 }

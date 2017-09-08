@@ -98,7 +98,7 @@ export class FiniteComponent extends ProjectComponent implements OnInit, OnDestr
         newTransition.shouldDuplicateLayout = rawTransition.shouldDuplicateLayout;
 
         rawTransition.conditions.forEach((condition) => {
-          newTransition.addCondition(condition);
+          newTransition.addCondition(new AlphabetSymbol(condition.symbol));
         });
       });
     });

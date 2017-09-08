@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormalGrammar, GrammarType, GrammarSymbol } from './formal-grammar';
+import { FormalGrammar, GrammarType, GrammarSymbol, ProductionRule } from './formal-grammar';
 import { ProjectComponent } from '../project.component'
 import { ToolEvent } from '../toolbar.component';
+
+declare var alertify;
 
 @Component({
   templateUrl: './grammar.component.html',
@@ -67,6 +69,56 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
           this.project.metadata.isUnsaved = true;
         }
       });
+    }
+  }
+
+  setSymbolAsStart(symbol: GrammarSymbol) {
+    this.project.selectStartSymbol(symbol);
+  }
+
+  createProductionRule(leftHand: string, rightHand: string) {
+    let left = leftHand.trim(),
+      right = rightHand.trim();
+    if (left != '') {// Prevent empty left hand sides
+      let leftSymbols = this.matchRawSymbols(left),
+        rightSymbols = this.matchRawSymbols(right);
+
+      this.project.addRule(new ProductionRule(leftSymbols, rightSymbols));
+    } else {
+      alertify.error("Left hand side of production rule cannot be empty.");
+    }
+  }
+
+  matchRawSymbols(rawSymbolWord: string): GrammarSymbol[] {
+    let validSymbols = this.project.nonterminalSymbols.concat(this.project.terminalSymbols),
+      detectedSymbols: GrammarSymbol[] = [];
+    
+    if(rawSymbolWord.indexOf(",") != -1) { // if it is a comma separated list, iteratively recurse into it
+      let words = rawSymbolWord.split(",");
+      words.forEach((word) => {
+        detectedSymbols = detectedSymbols.concat(this.matchRawSymbols(word));
+      });
+      return detectedSymbols;
+    } else {
+      for (let i = 0; i < rawSymbolWord.length;) {
+        let contained = false;
+        for(let j = rawSymbolWord.length; j > i && !contained; j--) {
+          let substr = rawSymbolWord.slice(i,j);
+          for (let k = 0; k < validSymbols.length; k++) {
+            if (substr == validSymbols[k].symbol) {
+              contained = true;
+              detectedSymbols.push(validSymbols[k]);
+              i += j - i;
+              break;
+            }
+          }
+        }
+        if (!contained) {
+          alertify.error("The word contains undefined symbols.");
+          throw "Undefined symbols in word";
+        }
+      }
+      return detectedSymbols;
     }
   }
 }

@@ -198,15 +198,21 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   validateWord(word: string) {
     let alphabet = this.automaton.alphabet.symbols;
-    for (let i = 0; i < word.length; i++) {
+    for (let i = 0; i < word.length;) {
       let contained = false;
-      for (let j = 0; j < alphabet.length; j++) {
-        if (word[i] == alphabet[j].symbol) {
-          contained = true;
-          break;
+      for(let j = word.length; j > i && !contained; j--) {
+        let substr = word.slice(i,j);
+        for (let k = 0; k < alphabet.length; k++) {
+          if (substr == alphabet[k].symbol) {
+            contained = true;
+            i += j - i;
+            break;
+          }
         }
       }
-      if (!contained) return false;
+      if (!contained) {
+        return false;
+      }
     }
     return true;
   }
@@ -260,7 +266,7 @@ class Simulation {
     this.step();
     this.stepInterval = setInterval(() => {
       this.step();
-    }, interval);
+    }, interval + 20); // 20ms minimum -> 50 states per second
   }
 
   stopInterval() {
@@ -273,6 +279,20 @@ class Simulation {
     this.stepInterval = setInterval(() => {
       this.step();
     }, interval);
+  }
+
+  getTransitionSymbol(currentDepth): [AlphabetSymbol, number] {
+    if(currentDepth >= this.inputWord.length) return [null, 0]
+    let alphabet = this.automaton.alphabet.symbols
+    for(let i = this.inputWord.length; i > currentDepth; i--) {
+      let substr = this.inputWord.slice(currentDepth,i);
+      for (let j = 0; j < alphabet.length; j++) {
+        if (substr == alphabet[j].symbol) {
+          return [alphabet[j], i - currentDepth];
+        }
+      }
+    }    
+    throw "Invalid symbol detected in simulation!";
   }
 
   step() {
@@ -292,12 +312,14 @@ class Simulation {
     if (this.currentElement.type == "state") {
       let stateTraversalElement = this.currentElement as TraversalState,
         state = stateTraversalElement.state,
-        inputSymbol = this.inputWord[stateTraversalElement.depth];
+        inputSymbolArray = this.getTransitionSymbol(stateTraversalElement.depth),
+        inputSymbol = inputSymbolArray[0],
+        inputDelta = inputSymbolArray[1];
 
       this.automaton.activeElement = state;
       this.lastDepth = stateTraversalElement.depth;
 
-      if (typeof (inputSymbol) == "undefined") { // We reached the end of the word
+      if (inputSymbol == null) { // We reached the end of the word
         if (state.type == "final" || state.type == "ambivalent") {
           alertify.success("The word is valid");
           this.reachedValidity = true; // If this is a final state, we win!
@@ -308,13 +330,13 @@ class Simulation {
         for (let i = state.transitions.length - 1; i >= 0; i--) {
           let transition = state.transitions[i]; // For every transition that matches our condition, push it to the stack
           if (transition.conditions.length == 0
-            || transition.hasCondition(new AlphabetSymbol(inputSymbol))) {
+            || transition.hasCondition(inputSymbol)) {
             if (transition.conditions.length == 0) { // Kleene Closures should not consume the string
               this.traversalStack.push(new TraversalTransition(
-                stateTraversalElement.depth - 1, "transition", transition));
+                stateTraversalElement.depth, "transition", transition));
             } else {
               this.traversalStack.push(new TraversalTransition(
-                stateTraversalElement.depth, "transition", transition));
+                stateTraversalElement.depth + inputDelta, "transition", transition));
             }
           }
         }
@@ -327,7 +349,7 @@ class Simulation {
       this.automaton.activeElement = transition;
 
       this.traversalStack.push(new TraversalState(
-        transitionTraversalElement.depth + 1, "state", destinationState));
+        transitionTraversalElement.depth, "state", destinationState));
     }
   }
 

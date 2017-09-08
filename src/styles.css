@@ -266,6 +266,19 @@ a span {
     max-width: 100%;
 }
 
+.symbol-entry.start {
+    background-color: #a5f3e3;
+}
+
+.symbol-entry.nonterminal:hover {
+    cursor: pointer;
+    background-color: #d0d0d0;
+}
+
+.symbol-entry.start:hover {
+    background-color: #8AEFDB;
+}
+
 .text-wrapper .plus-adder > input {
     width: 360px;
     max-width: calc(100% - 40px);

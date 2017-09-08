@@ -42,7 +42,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
     });
 
     this.onUnloadFunction = ($e) => {
-      console.log("unload");
       if (this.project.metadata.isUnsaved) {
         let message = "You have unsaved changes. Are you sure you want to exit?";
         // Most browsers don't accept a custom message nowadays, but it's here just in case.
