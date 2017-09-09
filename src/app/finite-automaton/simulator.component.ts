@@ -198,23 +198,34 @@ export class SimulatorComponent implements OnInit, OnDestroy {
 
   validateWord(word: string) {
     let alphabet = this.automaton.alphabet.symbols;
-    for (let i = 0; i < word.length;) {
-      let contained = false;
-      for(let j = word.length; j > i && !contained; j--) {
-        let substr = word.slice(i,j);
-        for (let k = 0; k < alphabet.length; k++) {
-          if (substr == alphabet[k].symbol) {
-            contained = true;
-            i += j - i;
-            break;
-          }
+
+    if(word.indexOf(",") != -1) {
+      let words = word.split(",");
+      for(let i = 0; i < words.length; i++) {
+        if(!this.validateWord(words[i])) {
+          return false;
         }
       }
-      if (!contained) {
-        return false;
+      return true;
+    } else {
+      for (let i = 0; i < word.length;) {
+        let contained = false;
+        for(let j = word.length; j > i && !contained; j--) {
+          let substr = word.slice(i,j);
+          for (let k = 0; k < alphabet.length; k++) {
+            if (substr == alphabet[k].symbol) {
+              contained = true;
+              i += j - i;
+              break;
+            }
+          }
+        }
+        if (!contained) {
+          return false;
+        }
       }
+      return true;
     }
-    return true;
   }
 
 }
@@ -228,6 +239,7 @@ class Simulation {
   currentElement: TraversalElement;
   lastDepth: number;
   reachedValidity: boolean;
+  inputSymbols: AlphabetSymbol[];
 
 
   get isRunning() {
@@ -257,9 +269,43 @@ class Simulation {
     this.lastDepth = 0;
     this.reachedValidity = false;
     this.traversalStack = [new TraversalState(0, "state", this.initialState)];
+    this.inputSymbols = this.extractInputSymbols(word);
 
     this.automaton.selectedState = null;
     this.automaton.selectedTransition = null;
+  }
+
+  extractInputSymbols(rawSymbolWord: string): AlphabetSymbol[] {
+    let validSymbols = this.automaton.alphabet.symbols,
+      detectedSymbols: AlphabetSymbol[] = [];
+    
+    if(rawSymbolWord.indexOf(",") != -1) { // if it is a comma separated list, iteratively recurse into it
+      let words = rawSymbolWord.split(",");
+      words.forEach((word) => {
+        detectedSymbols = detectedSymbols.concat(this.extractInputSymbols(word));
+      });
+      return detectedSymbols;
+    } else {
+      for (let i = 0; i < rawSymbolWord.length;) {
+        let contained = false;
+        for(let j = rawSymbolWord.length; j > i && !contained; j--) {
+          let substr = rawSymbolWord.slice(i,j);
+          for (let k = 0; k < validSymbols.length; k++) {
+            if (substr == validSymbols[k].symbol) {
+              contained = true;
+              detectedSymbols.push(validSymbols[k]);
+              i += j - i;
+              break;
+            }
+          }
+        }
+        if (!contained) {
+          alertify.error("The word contains undefined symbols.");
+          throw "Undefined symbols in word";
+        }
+      }
+      return detectedSymbols;
+    }
   }
 
   startInterval(interval: number) {
@@ -312,14 +358,12 @@ class Simulation {
     if (this.currentElement.type == "state") {
       let stateTraversalElement = this.currentElement as TraversalState,
         state = stateTraversalElement.state,
-        inputSymbolArray = this.getTransitionSymbol(stateTraversalElement.depth),
-        inputSymbol = inputSymbolArray[0],
-        inputDelta = inputSymbolArray[1];
+        inputSymbol = this.inputSymbols[stateTraversalElement.depth];
 
       this.automaton.activeElement = state;
       this.lastDepth = stateTraversalElement.depth;
 
-      if (inputSymbol == null) { // We reached the end of the word
+      if (typeof(inputSymbol) == "undefined") { // We reached the end of the word
         if (state.type == "final" || state.type == "ambivalent") {
           alertify.success("The word is valid");
           this.reachedValidity = true; // If this is a final state, we win!
@@ -336,7 +380,7 @@ class Simulation {
                 stateTraversalElement.depth, "transition", transition));
             } else {
               this.traversalStack.push(new TraversalTransition(
-                stateTraversalElement.depth + inputDelta, "transition", transition));
+                stateTraversalElement.depth + 1, "transition", transition));
             }
           }
         }

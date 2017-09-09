@@ -6,6 +6,7 @@
   bottom: 0;
   padding: 8px;
   background-color: #fafafa;
+  overflow: auto;
 }
 
 .half {
@@ -132,6 +133,7 @@ button.tester:after {
   padding: 2px 4px;
   background-color: #f0f0f0;
   display: inline-block;
+  overflow: hidden;
 }
 
 .rule:before {
@@ -150,7 +152,11 @@ button.tester:after {
 .rule span.remove {
   color: #e74c3c;
   cursor: pointer;
-  border-right: #fafafa solid 1px;
+  border-right: #fafafa solid 2px;
+  padding: 8px;
+  position: relative;
+  text-align: center;
+  left: -4px;
 }
 
 .rule span.remove:hover {

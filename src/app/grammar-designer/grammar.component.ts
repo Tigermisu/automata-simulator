@@ -89,6 +89,10 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
     }
   }
 
+  removeRule(rule: ProductionRule) {
+    this.project.removeRule(rule);
+  }
+
   matchRawSymbols(rawSymbolWord: string): GrammarSymbol[] {
     let validSymbols = this.project.nonterminalSymbols.concat(this.project.terminalSymbols),
       detectedSymbols: GrammarSymbol[] = [];
