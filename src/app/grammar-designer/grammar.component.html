@@ -1,71 +1,81 @@
 <div class="grammar-workspace">
-  <div class="half">
-    <label for="projectTitle">Grammar Title</label>
-    <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title" (change)="this.project.metadata.isUnsaved = true;">
+  <div class="grammar-container">
+    <div class="half">
+      <label for="projectTitle">Grammar Title</label>
+      <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title" (change)="this.project.metadata.isUnsaved = true;">
 
-    <label for="grammarType">Grammar Type</label>
-    <div class="radio-wrapper">
-      <input type="radio" name="grammarType" value="type" id="type" [checked]="project.grammarType == 0" (change)="changeType(1)">
-      <label for="type">Regular Grammar</label>
-    </div>
-
-    <label for="nonterminals">Non-Terminal Symbols</label>
-    <div class="alphabet-symbols">
-      <div class="symbol-entry nonterminal" *ngFor="let symbol of project.nonterminalSymbols" 
-      (click)="setSymbolAsStart(symbol)"
-      [class.start]="project.startSymbol == symbol">
-        {{ symbol }}
-        <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+      <label for="grammarType">Grammar Type</label>
+      <div class="radio-wrapper">
+        <input type="radio" name="grammarType" value="type" id="type" [checked]="project.grammarType == 0" (change)="changeType(1)">
+        <label for="type">Regular Grammar</label>
       </div>
 
-       <span>
-        {{ project.getFormalString(false) }}
-       </span>
-    </div>
-    <div class="plus-adder">
-      <input type="text" id="nonterminals" #nonterminalSymbolInput (keyup.enter)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">
-      <button (click)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">+</button>
-    </div>
+      <label for="nonterminals">Non-Terminal Symbols</label>
+      <div class="alphabet-symbols">
+        <div class="symbol-entry nonterminal" *ngFor="let symbol of project.nonterminalSymbols" 
+        (click)="setSymbolAsStart(symbol)"
+        [class.start]="project.startSymbol == symbol">
+          {{ symbol }}
+          <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+        </div>
 
-    <label for="terminals">Terminal Symbols</label>
-    <div class="alphabet-symbols">
-      <div class="symbol-entry" *ngFor="let symbol of project.terminalSymbols">
-        {{ symbol }}
-        <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+        <span>
+          {{ project.getFormalString(false) }}
+        </span>
       </div>
-      <span>
-        {{ project.getFormalString(true) }}
-      </span>
-    </div>
-    <div class="plus-adder">
-      <input type="text" id="terminals" #terminalSymbolInput (keyup.enter)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">
-      <button (click)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">+</button>
-    </div>    
+      <div class="plus-adder">
+        <input type="text" id="nonterminals" #nonterminalSymbolInput (keyup.enter)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">
+        <button (click)="addSymbolToGrammar(nonterminalSymbolInput.value, false); nonterminalSymbolInput.value = ''">+</button>
+      </div>
 
-    <label for="rules">Production Rules</label>
-    <div class="production-rules">
-      <div class="rule-wrapper" *ngFor="let rule of project.productionRules">        
-        <div class="rule">
-          <span class="remove" (click)="removeRule(rule)">x</span> {{ rule.leftHandSide }} <div class="arrow"></div> {{ rule.rightHandSide }}
+      <label for="terminals">Terminal Symbols</label>
+      <div class="alphabet-symbols">
+        <div class="symbol-entry" *ngFor="let symbol of project.terminalSymbols">
+          {{ symbol }}
+          <span class="remove" (click)="removeSymbolFromGrammar(symbol)">x</span>
+        </div>
+        <span>
+          {{ project.getFormalString(true) }}
+        </span>
+      </div>
+      <div class="plus-adder">
+        <input type="text" id="terminals" #terminalSymbolInput (keyup.enter)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">
+        <button (click)="addSymbolToGrammar(terminalSymbolInput.value, true); terminalSymbolInput.value = ''">+</button>
+      </div>    
+
+      <label for="rules">Production Rules</label>
+      <div class="production-rules">
+        <div class="rule-wrapper" *ngFor="let rule of project.productionRules">        
+          <div class="rule">
+            <span class="remove" (click)="removeRule(rule)">x</span> {{ rule.leftHandSide }} <div class="arrow"></div> 
+            <span class="rightHand" *ngFor="let right of rule.rightHandSide">{{ right }}</span>
+            <span class="rightHand" *ngIf="rule.rightHandSide.length == 0">&#x3B5;</span>
+          </div>
         </div>
       </div>
+      <div class="production-rules-input">
+        <input type="text" id="rules" #leftHandInput
+          (keyup.enter)="rightHandInput.focus()">
+        <div class="arrow"></div>
+        <input type="text" id="rulesRight" #rightHandInput 
+            (keyup.enter)="createProductionRule(leftHandInput.value, rightHandInput.value); leftHandInput.value = ''; rightHandInput.value = ''">
+        <button (click)="createProductionRule(leftHandInput.value, rightHandInput.value); leftHandInput.value = ''; rightHandInput.value = ''">+</button>
+      </div>
     </div>
-    <div class="production-rules-input">
-      <input type="text" id="rules" #leftHandInput
-        (keyup.enter)="rightHandInput.focus()">
-      <div class="arrow"></div>
-      <input type="text" id="rulesRight" #rightHandInput 
-          (keyup.enter)="createProductionRule(leftHandInput.value, rightHandInput.value); leftHandInput.value = ''; rightHandInput.value = ''">
-      <button (click)="createProductionRule(leftHandInput.value, rightHandInput.value); leftHandInput.value = ''; rightHandInput.value = ''">+</button>
-    </div>
-  </div>
-  <div class="half">
-    <label for="InputWord">Input Word</label>
-    <br>
-    <input type="text" id="InputWord" class="tester">
-    <button class="tester">Test</button>
-    <div class="previewer">
-
+    <div class="half">
+      <label for="InputWord">Input Word</label>
+      <br>
+      <input type="text" id="InputWord" class="tester" #inputWord (keyup.enter)="testWord(inputWord.value)">
+      <button class="tester" (click)="testWord(inputWord.value)">Test</button>
+      <div class="previewer">
+        <div *ngIf="expansionTree != null">
+          <div class="level" *ngFor="let depthLevel of expansionTree">
+            <div class="tree-node" *ngFor="let node of depthLevel" [class.special]="node.isSpecial">
+              <span *ngFor="let s of node.value">{{ s }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

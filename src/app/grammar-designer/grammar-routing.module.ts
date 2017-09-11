@@ -8,6 +8,7 @@ import { UnsavedChangesGuard } from '../unsaved-changes.guard';
 const routes: Routes = [
   {
     path: 'grammar',
+    canDeactivate: [UnsavedChangesGuard],
     component: GrammarComponent,
   }
 ];

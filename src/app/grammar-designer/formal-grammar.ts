@@ -23,6 +23,16 @@ export class FormalGrammar extends Project {
         return "<Please click on a symbol to designiate it as Start>";
     }
 
+    get startRule(): ProductionRule {
+        for(let i = 0; i < this.productionRules.length; i++) {
+            if(this.productionRules[i].leftHandSide.length == 1
+                && this.productionRules[i].leftHandSide[0] == this.startSymbol) {
+                    return this.productionRules[i];
+                }
+        }
+        return null;
+    }
+
     selectStartSymbol(symbol: GrammarSymbol) {
         this.startSymbol = symbol;
     }
@@ -89,6 +99,17 @@ export class FormalGrammar extends Project {
             if (this.nonterminalSymbols[i].symbol == symbol.symbol) return true;
         }
         return false;
+    }
+
+    isNonterminalSymbol(symbol: GrammarSymbol): boolean {
+        return this.nonterminalSymbols.includes(symbol);
+    }
+
+    getRulesforSymbol(symbol: GrammarSymbol): ProductionRule[] {
+        if(this.isNonterminalSymbol(symbol)) {
+            return this.productionRules.filter(rule => rule.leftHandSide.includes(symbol));
+        }
+        return [];    
     }
 
     getFormalString(fromTerminals: boolean) {
