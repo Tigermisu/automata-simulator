@@ -22,11 +22,16 @@
   padding: 8px;
 }
 
+.half:first-child {
+  overflow: auto;
+}
+
 .previewer {
   border: #bcbcbc solid 1px;
   background-color: #fff;
   clear: both;
   height: calc(100% - 58px);
+  overflow: auto;
 }
 
 input:not([type=radio])  {

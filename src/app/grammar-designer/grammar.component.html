@@ -3,12 +3,13 @@
     <div class="half">
       <label for="projectTitle">Grammar Title</label>
       <input type="text" id="projectTitle" [(ngModel)]="appStateService.project?.metadata.title" (change)="this.project.metadata.isUnsaved = true;">
-
+      <!--
       <label for="grammarType">Grammar Type</label>
       <div class="radio-wrapper">
         <input type="radio" name="grammarType" value="type" id="type" [checked]="project.grammarType == 0" (change)="changeType(1)">
         <label for="type">Regular Grammar</label>
       </div>
+      -->
 
       <label for="nonterminals">Non-Terminal Symbols</label>
       <div class="alphabet-symbols">

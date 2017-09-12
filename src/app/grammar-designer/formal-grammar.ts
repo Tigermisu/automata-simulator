@@ -163,7 +163,7 @@ export class ProductionRule {
     leftHandSide: GrammarSymbol[];
     rightHandSide: GrammarSymbol[];
 
-    constructor(left, right) {
+    constructor(left: GrammarSymbol[], right: GrammarSymbol[]) {
         this.leftHandSide = left;
         this.rightHandSide = right;
     }

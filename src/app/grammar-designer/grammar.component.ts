@@ -30,8 +30,6 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
 
       buildTreeRepresentation(this.expansionTreeRoot, baseArray);
 
-      console.log(baseArray);
-
       return baseArray;
     }
     return null;
@@ -76,7 +74,31 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
     let grammar = new FormalGrammar(rawGrammar.grammarType);
     grammar.metadata = rawGrammar.metadata;
 
-    // TODO: Parse gramamr object
+    rawGrammar.terminalSymbols.forEach((s) => {
+      grammar.addSymbol(new GrammarSymbol(s.symbol), true);
+    });
+
+    rawGrammar.nonterminalSymbols.forEach((s) => {
+      grammar.addSymbol(new GrammarSymbol(s.symbol), false);
+    });
+    
+    let symbols = grammar.terminalSymbols.concat(grammar.nonterminalSymbols);
+
+    rawGrammar.productionRules.forEach((rule) => {
+      grammar.addRule(new ProductionRule(symbols.filter((s) => {
+        let leftSymbols = rule.leftHandSide.map(x => x.symbol);
+        return leftSymbols.includes(s.symbol);
+      }), symbols.filter((s) => {
+        let rightSymbols = rule.rightHandSide.map(x => x.symbol);
+        return rightSymbols.includes(s.symbol);
+      })));
+    });
+
+    rawGrammar.startSymbol = grammar.nonterminalSymbols.find((s) => {
+      return s.symbol == rawGrammar.startSymbol.symbol;
+    });
+
+    grammar.metadata.isUnsaved = false;
 
     return grammar;
   }
@@ -153,7 +175,7 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
           }
         }
         if (!contained) {
-          alertify.error("The word contains undefined symbols.");
+          alertify.error("The word contains invalid symbols.");
           throw "Undefined symbols in word";
         }
       }
@@ -177,7 +199,7 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
     this.expansionTreeRoot = new TreeNode(0, start.rightHandSide);
     
     currentDepthMembers.push(this.expansionTreeRoot);
-
+    let iterations = 0;
 
     while(!foundValidWord) {
       let newChildren: TreeNode[] = [],
@@ -196,13 +218,21 @@ export class GrammarComponent extends ProjectComponent implements OnInit, OnDest
       exhausted = newChildren.every((child) => {
         let terminals = child.value.filter(s => this.project.terminalSymbols.includes(s));
         return terminals.length > wordSymbols.length;
-      });
+      }) || wordSymbols.length < iterations++ - wordSymbols.length;
 
       if(newChildren.length == 0 || exhausted) break; // Cannot expand any further
 
       currentDepthMembers = newChildren;
     }
-    
+
+    if(!foundValidWord && maxLength == 1) {
+      console.log(start.rightHandSide, wordSymbols);
+      foundValidWord = true; // Start assuming our first node has the answer
+      for(let i = 0; i < start.rightHandSide.length && foundValidWord; i++) {
+        if(start.rightHandSide[i] != wordSymbols[i]) foundValidWord = false;
+      } 
+      this.expansionTreeRoot.isSpecial = foundValidWord;
+    }
 
     if(foundValidWord) {
       alertify.success("The word is valid.");
