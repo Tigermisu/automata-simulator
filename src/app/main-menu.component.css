@@ -10,15 +10,39 @@
   padding-top: 88px;
 }
 
-ul {
-  list-style: none;
-  padding-left: 10px;
+.automata-options {
+  display: flex;
+  justify-content: center;
 }
 
-li:before {
-  content: "-";
-  margin-right: 10px;
+.automata-options > a > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;
+  width: 200px;
+  height: 200px;
+  box-shadow: 3px 3px 8px 1px #999;
+  margin: 10px;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  color: #333;
 }
+
+.automata-options > a > div:hover {
+  box-shadow: 4px 4px 8px 3px #999;
+  background-color: #f7f7f7;
+}
+
+.tag {
+  position: relative;
+  top: -10px;
+  font-size: 10px;
+  color: #fff;
+  background-color: #c0392b;
+  border-radius: 5px;
+  padding: 2px 4px;
+}
+
 
 .margin {
   margin: 80px;

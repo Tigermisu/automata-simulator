@@ -1,12 +1,10 @@
 <div class="container">
   <h2>Welcome to Christomata.</h2>
-  <h3><a routerLink="">Open an existing automaton</a> or choose a type to begin:</h3>
-  <ul>
-    <li><a routerLink="/finite">Finite Automata</a></li>
-    <li><a routerLink="/grammar">Grammar Designer</a></li>
-    <li>Pushdown Automata</li>
-    <li>Turing Machine</li>
-  </ul>
+  <h3>Choose a type to begin:</h3>
+  <div class="automata-options">
+    <a routerLink="/finite"><div>Finite State Automata</div></a>
+    <a routerLink="/grammar"><div>Grammar Designer <span class="tag">Alpha</span></div></a>
+  </div>
 
   <div class="margin"></div>
 
@@ -14,7 +12,7 @@
   <p>This project is still a work in progress. Reference and documentation will be provided later on, but this project aims
     to achieve high degrees of usability with great UX and functionality.</p>
   <h3>About</h3>
-  <p>This is a project created by <a href="http://jaquez.mx/">Chris Jáquez</a> as extra credit for the college class of Computational
+  <p>This is a project created by <a href="https://jaquez.mx/">Chris Jáquez</a> as extra credit for the college class of Computational
     Mathematics.</p>
   <p>This project is developed using Angular and its source code is available at <a href="https://github.com/Tigermisu/automaton-simulator">Github</a>    under the APACHE license.</p>
 </div>
