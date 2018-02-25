@@ -6,7 +6,7 @@ import { AppStateService } from './app-state.service';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  constructor(private appStateService: AppStateService) { }
+  constructor(public appStateService: AppStateService) { }
 
   ngOnInit() {
     this.appStateService.registerAppComponent(this);

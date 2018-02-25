@@ -6,14 +6,14 @@ import { AppStateService } from './app-state.service';
   templateUrl: './toolbar.component.html'
 })
 export class ToolbarComponent implements OnInit {
-  private selectedTool: string;
-  private toolbarEnableState = {
+  public selectedTool: string;
+  public toolbarEnableState = {
     "finiteautomaton": false
   };
 
   @Output() toolclicked: EventEmitter<ToolEvent> = new EventEmitter();
 
-  constructor(private appStateService: AppStateService) { }
+  constructor(public appStateService: AppStateService) { }
 
 
   ngOnInit(): void {

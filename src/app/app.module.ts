@@ -9,6 +9,7 @@ import { AppStateService } from './app-state.service';
 import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar.component';
 import { MainMenuComponent } from './main-menu.component';
+import { ProjectComponent } from './project.component';
 
 import { UnsavedChangesGuard } from './unsaved-changes.guard';
 
@@ -16,7 +17,8 @@ import { UnsavedChangesGuard } from './unsaved-changes.guard';
   declarations: [
     AppComponent,
     ToolbarComponent,
-    MainMenuComponent
+    MainMenuComponent,
+    ProjectComponent
   ],
   imports: [
     BrowserModule,

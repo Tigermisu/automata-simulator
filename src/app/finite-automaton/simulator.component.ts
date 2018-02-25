@@ -34,7 +34,7 @@ export class SimulatorComponent implements OnInit, OnDestroy {
     return "Start";
   }
 
-  constructor(private appStateService: AppStateService) { }
+  constructor(public appStateService: AppStateService) { }
 
   ngOnInit() {
     this.automaton = this.appStateService.project as FiniteAutomaton;

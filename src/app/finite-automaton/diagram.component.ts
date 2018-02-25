@@ -16,8 +16,9 @@ export class DiagramComponent implements OnInit, OnDestroy {
   private lastClickDetails: any = { isMouseDown: false };
   private toolbarSubscription: Subscription;
   private projectSubscription: Subscription;
-  private automaton: FiniteAutomaton;
-  draggedState: State = null;
+  
+  public automaton: FiniteAutomaton;
+  public draggedState: State = null;
 
   @HostListener('document:keyup', ['$event']) onKeyUp($event: KeyboardEvent) {
     let keyCode = $event.code;
@@ -82,7 +83,7 @@ export class DiagramComponent implements OnInit, OnDestroy {
     }    
   }
 
-  constructor(private appStateService: AppStateService,
+  constructor(public appStateService: AppStateService,
               private sanitizer: DomSanitizer) {}
  
   ngOnInit() {

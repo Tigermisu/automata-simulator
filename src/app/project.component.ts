@@ -15,7 +15,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   project: Project;
 
-  constructor(protected appStateService: AppStateService,
+  constructor(public appStateService: AppStateService,
     protected router: Router) { }
 
   @HostListener('document:keydown', ['$event']) onKeyDown($event: KeyboardEvent) {

@@ -11,9 +11,9 @@ import { AlphabetSymbol } from '../automaton';
 })
 export class OptionsComponent implements OnInit, OnDestroy {
   private projectSubscription: Subscription;
-  private automaton: FiniteAutomaton;
+  public automaton: FiniteAutomaton;
 
-  constructor(private appStateService: AppStateService) { }
+  constructor(public appStateService: AppStateService) { }
 
   ngOnInit() {
     this.automaton = this.appStateService.project as FiniteAutomaton;
